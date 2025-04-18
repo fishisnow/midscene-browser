@@ -130,6 +130,24 @@
   padding: 0;
 }
 
+/* 任务列表容器 */
+.tasks-container {
+  flex: 1;
+  padding: 0 5px;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
+/* 空状态知识容器 */
+.empty-knowledge-container {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  padding: 0 5px;
+  box-sizing: border-box;
+}
+
 /* 底部输入区固定在底部 */
 .footer-input-area {
   position: sticky;
@@ -138,14 +156,14 @@
   right: 0;
   z-index: 10;
   background-color: #fff;
-  padding: 10px 15px;
-  border-top: 1px solid @border-color;
-  box-shadow: 0 -1px 6px rgba(0, 0, 0, 0.03);
   width: 100%;
   box-sizing: border-box;
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 0;
+  border-top: none;
+  box-shadow: none;
 }
 
 /* 无缝表单 */
@@ -158,35 +176,11 @@
   overflow: hidden;
 }
 
-/* 内容卡片 */
-.content-card {
-  flex-shrink: 0;
-}
-
-/* 知识库卡片包装 */
-.knowledge-wrapper {
-  flex-shrink: 0;
-}
-
 /* 任务列表包装 */
 .task-wrapper {
   flex: 1;
   overflow-y: auto;
   margin-bottom: 10px;
-}
-
-/* 输入区域包装 */
-.input-wrapper {
-  flex-shrink: 0;
-  margin: 0;
-  padding: 8px 10px;
-  min-height: 60px;
-  /* 位于底部的样式 */
-  box-shadow: 0 -1px 6px rgba(0, 0, 0, 0.03);
-  z-index: 10;
-  width: 100%;
-  max-width: 560px;
-  border-radius: @border-radius-lg;
 }
 
 /* 弹窗样式 */
@@ -198,14 +192,6 @@
   font-weight: 600;
   font-size: 16px;
   color: @text-primary;
-}
-
-.settings-modal .ant-modal-footer {
-  border-top: 1px solid @border-color;
-}
-
-.settings-modal .ant-btn {
-  border-radius: @border-radius-base;
 }
 
 /* 响应式调整 */

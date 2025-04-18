@@ -174,7 +174,9 @@ export function KnowledgeCarousel({
             <div className="knowledge-card-icon">
                 {item.isCustom ? <UserOutlined /> : <BookOutlined />}
             </div>
-            <div className="knowledge-card-title">{item.name}</div>
+            <Tooltip title={item.name} placement="top">
+                <div className="knowledge-card-title">{item.name}</div>
+            </Tooltip>
             <Tooltip 
                 title={item.content} 
                 placement="top" 
@@ -195,7 +197,7 @@ export function KnowledgeCarousel({
     const showNextButton = currentIndex < filteredKnowledge.length - 4;
 
     return (
-        <div className="knowledge-carousel" style={{ maxWidth: '360px' }}>
+        <div className="knowledge-carousel">
             <div className="knowledge-carousel-header">
                 <span className="knowledge-carousel-title">高级知识库</span>
                 {selectedKnowledgeLocal && (

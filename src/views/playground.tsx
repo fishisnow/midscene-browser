@@ -586,6 +586,9 @@ export function BrowserExtensionPlayground({
                     )}
 
                     <div className="input-wrapper">
+                        {loading && (
+                            <div className="footer-loading-indicator"></div>
+                        )}
                         <Form form={form}>
                             <Form.Item name="prompt">
                                 <div className="textarea-container">
@@ -602,6 +605,7 @@ export function BrowserExtensionPlayground({
                                             }}
                                             placeholder="输入您的问题..."
                                             autoSize={{minRows: 1, maxRows: 4}}
+                                            disabled={loading}
                                         />
                                         <ExecuteButton
                                             onClick={handleExecuteClick}

@@ -1,0 +1,332 @@
+@import '../common.less';
+
+/* 内容卡片基础样式 */
+.content-card {
+  background-color: #ffffff;
+  border-radius: 0;
+  margin: 0 0 1px;
+  overflow: hidden;
+  border-bottom: 1px solid @border-color;
+  width: 100%;
+  box-shadow: none;
+}
+
+/* 选中知识指示器 */
+.selected-knowledge-indicator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background-color: @selected-bg;
+  border-radius: @border-radius-base;
+  color: @primary-color;
+  font-size: 13px;
+  margin-bottom: 10px;
+}
+
+.knowledge-icon {
+  font-size: 16px;
+}
+
+/* 空状态样式 */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 20px;
+  text-align: center;
+}
+
+.empty-icon {
+  font-size: 24px;
+  color: #ccc;
+  margin-bottom: 12px;
+}
+
+.empty-text {
+  color: #888;
+  font-size: 14px;
+}
+
+/* 知识库卡片区域 - 清言风格 */
+.knowledge-carousel {
+  margin: 10px auto;
+  background-color: #fafafa;
+  border-radius: @border-radius-base;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+  padding: 10px 8px;
+  border: 1px solid @border-color;
+  transition: @transition-fast;
+  max-width: 100%;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.knowledge-carousel:hover {
+  box-shadow: @box-shadow-hover;
+}
+
+.knowledge-carousel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.knowledge-carousel-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: @text-primary;
+  margin-right: 8px;
+  position: relative;
+}
+
+.knowledge-carousel-title::after {
+  content: "";
+  position: absolute;
+  bottom: -3px;
+  left: 0;
+  width: 15px;
+  height: 2px;
+  background-color: @primary-color;
+}
+
+.selected-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 6px;
+  border-radius: @border-radius-pill;
+  background-color: @selected-bg;
+  color: @primary-color;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+/* 知识库胶囊容器 */
+.knowledge-carousel-container {
+  position: relative;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  border-radius: @border-radius-base;
+  padding: 4px;
+  overflow: hidden;
+}
+
+/* 切换栏样式 */
+.knowledge-tabs {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+  border-bottom: 1px solid @border-color;
+  padding-bottom: 6px;
+}
+
+.knowledge-tab {
+  padding: 4px 10px;
+  font-size: 12px;
+  color: @text-secondary;
+  cursor: pointer;
+  border-radius: @border-radius-base;
+  transition: @transition-fast;
+  margin-right: 6px;
+}
+
+.knowledge-tab.active {
+  background-color: @primary-color;
+  color: #fff;
+  font-weight: 500;
+}
+
+.knowledge-tab:hover:not(.active) {
+  background-color: @hover-bg;
+  color: @text-primary;
+}
+
+/* 推荐工具卡片风格 */
+.knowledge-cards {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  width: 100%;
+  overflow-x: auto;
+  padding: 6px 0;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+}
+
+.knowledge-cards::-webkit-scrollbar {
+  display: none; /* Chrome, Safari and Opera */
+}
+
+/* 推荐工具卡片样式 */
+.knowledge-card {
+  flex: 0 0 auto;
+  min-width: 65px;
+  max-width: 65px;
+  height: 60px;
+  border-radius: @border-radius-base;
+  border: 1px solid @border-color;
+  transition: @transition-fast;
+  padding: 5px 3px;
+  margin: 0 3px;
+  cursor: pointer;
+  background-color: #fff;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.knowledge-card:hover {
+  box-shadow: @box-shadow-hover;
+  border-color: @primary-color;
+  transform: translateY(-2px);
+}
+
+.knowledge-card.selected {
+  background-color: @selected-bg;
+  border-color: @primary-color;
+  box-shadow: 0 1px 3px rgba(6, 177, 171, 0.2);
+}
+
+.knowledge-card-title {
+  font-weight: 500;
+  font-size: 12px;
+  margin-top: 4px;
+  margin-bottom: 0;
+  color: @text-primary;
+  text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  width: 100%;
+}
+
+.knowledge-card-icon {
+  font-size: 18px;
+  color: @primary-color;
+}
+
+.knowledge-card:hover .knowledge-card-icon {
+  transform: scale(1.1);
+}
+
+.knowledge-card.selected .knowledge-card-icon {
+  color: darken(@primary-color, 10%);
+}
+
+/* 知识库类型标识 */
+.custom-knowledge .knowledge-card-icon {
+  color: @primary-color;
+}
+
+.system-knowledge .knowledge-card-icon {
+  color: @info-color;
+}
+
+/* 知识库指示器 */
+.knowledge-indicator {
+  font-size: 10px;
+  color: @text-secondary;
+  margin-top: 3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.knowledge-status-dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background-color: @text-light;
+  display: inline-block;
+  margin-right: 2px;
+}
+
+.knowledge-card.selected .knowledge-status-dot {
+  background-color: @primary-color;
+  animation: pulseDot 1.5s infinite ease-in-out;
+}
+
+@keyframes pulseDot {
+  0% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.2); opacity: 0.7; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* 添加知识按钮 */
+.add-knowledge-btn {
+  background-color: @primary-color;
+  border-color: @primary-color;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: @border-radius-circle;
+  padding: 0;
+  font-size: 15px;
+  margin-left: 6px;
+}
+
+.add-knowledge-btn:hover {
+  background-color: darken(@primary-color, 10%);
+  transform: scale(1.05);
+}
+
+/* 轮播导航按钮 */
+.carousel-nav-button {
+  width: 20px;
+  height: 20px;
+  border-radius: @border-radius-circle;
+  border: 1px solid @border-color;
+  background-color: #fff;
+  color: @text-secondary;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: @transition-fast;
+  cursor: pointer;
+  z-index: 2;
+  margin: 0 2px;
+  flex-shrink: 0;
+}
+
+.carousel-nav-button:hover:not(:disabled) {
+  background-color: @primary-color;
+  color: #fff;
+}
+
+.carousel-nav-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* 工具提示样式 */
+.ant-tooltip {
+  max-width: 300px;
+}
+
+.ant-tooltip-inner {
+  padding: 6px 10px;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+/* 空知识状态 */
+.empty-knowledge {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 12px;
+  color: @text-light;
+  width: 100%;
+} 

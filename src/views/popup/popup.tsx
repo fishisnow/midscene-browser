@@ -1,8 +1,7 @@
 /// <reference types="chrome" />
 import '@midscene/visualizer/index.css';
 import {ConfigProvider} from 'antd';
-import {BrowserExtensionPlayground} from '../components/playground.tsx';
-import '../styles/popup.less';
+import {BrowserExtensionPlayground} from '../playground.tsx';
 import {
     ChromeExtensionProxyPage,
     ChromeExtensionProxyPageAgent,

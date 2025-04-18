@@ -1,0 +1,196 @@
+@import '../common.less';
+
+/* 知识指示器容器 */
+.knowledge-indicator-container {
+  width: 100%;
+  padding: 0 15px;
+  margin: 10px 0 20px;
+}
+
+/* 空状态下的知识卡片容器 */
+.empty-knowledge-container {
+  width: 100%;
+  padding: 0 10px;
+  margin-bottom: 25px;
+  max-width: 320px;
+  align-self: center;
+}
+
+/* 主容器样式 */
+.playground-container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* 头部导航栏 */
+.header-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  height: 48px;
+  background-color: #fff;
+  border-bottom: 1px solid @border-color;
+}
+
+.logo-container {
+  display: flex;
+  align-items: center;
+}
+
+.midscene-logo {
+  height: 24px;
+  margin-right: 8px;
+}
+
+.logo-text {
+  font-size: 16px;
+  font-weight: 500;
+  color: @text-primary;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* 主要内容区域 */
+.playground-content {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+/* 对话区域 */
+.conversation-area {
+  flex: 1;
+  padding: 0 16px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 任务统计 */
+.task-statistics {
+  margin: 12px 0;
+  padding: 12px;
+  background-color: #f9fafb;
+  border-radius: 8px;
+  border: 1px solid @border-color;
+}
+
+.stat-item {
+  margin-bottom: 8px;
+}
+
+.stat-details {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: @text-secondary;
+}
+
+.error-count {
+  color: @error-color;
+}
+
+/* 任务列表容器 */
+.tasks-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 任务列表占位符 */
+.task-list-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  text-align: center;
+  color: @text-secondary;
+  font-size: 14px;
+}
+
+.loading-dots {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 12px;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  background-color: @primary-color;
+  border-radius: 50%;
+  margin: 0 4px;
+  opacity: 0.6;
+  animation: loadingDot 1.4s infinite ease-in-out both;
+}
+
+.dot:nth-child(1) {
+  animation-delay: -0.32s;
+}
+
+.dot:nth-child(2) {
+  animation-delay: -0.16s;
+}
+
+@keyframes loadingDot {
+  0%, 80%, 100% { transform: scale(0); }
+  40% { transform: scale(1); }
+}
+
+/* 底部输入区域 */
+.footer-input-area {
+  padding: 8px 12px;
+  border-top: 1px solid @border-color;
+  background-color: #fff;
+}
+
+.input-wrapper {
+  margin-bottom: 0;
+}
+
+.textarea-container {
+  position: relative;
+}
+
+.input-with-button {
+  display: flex;
+  align-items: flex-end;
+  background-color: #f5f5f5;
+  border-radius: 18px;
+  padding: 6px 8px;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.input-with-button .ant-input-textarea {
+  background: transparent;
+  border: none;
+  padding: 0;
+  margin-right: 8px;
+  flex: 1;
+}
+
+.input-with-button .ant-input-textarea .ant-input {
+  background: transparent;
+  border: none;
+  box-shadow: none !important;
+  padding: 3px 6px;
+  resize: none;
+  line-height: 1.5;
+  font-size: 14px;
+}
+
+.input-with-button .ant-input-textarea .ant-input:focus {
+  box-shadow: none !important;
+  outline: none;
+} 

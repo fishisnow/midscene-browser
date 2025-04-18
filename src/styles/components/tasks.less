@@ -1,0 +1,529 @@
+@import '../common.less';
+
+/* 任务列表容器 */
+.task-list-container {
+  margin-bottom: 0;
+  position: relative;
+  padding: 0;
+}
+
+.task-list-placeholder {
+  background-color: #fff;
+  padding: 30px 20px;
+  text-align: center;
+  color: @text-light;
+  font-size: 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 150px;
+  transition: all 0.3s ease;
+  border: 1px dashed @border-color;
+  border-radius: @border-radius-base;
+  margin: 10px;
+}
+
+.placeholder-icon {
+  font-size: 28px;
+  margin-bottom: 12px;
+  color: @text-light;
+}
+
+.placeholder-text {
+  color: @text-light;
+  font-size: 14px;
+}
+
+/* 任务列表 */
+.task-list {
+  width: 100%;
+  border-radius: 0;
+  overflow: hidden;
+  background-color: #fff;
+}
+
+.task-list-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: @layout-space-sm;
+  border-bottom: 1px solid @border-color;
+}
+
+.task-list-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: @text-primary;
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+.task-list-title::after {
+  content: "";
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 18px;
+  height: 2px;
+  background-color: @primary-color;
+}
+
+.task-list-title-icon {
+  margin-right: 8px;
+  font-size: 16px;
+  color: @text-secondary;
+}
+
+.task-counter {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: @border-radius-pill;
+  background-color: rgba(0, 0, 0, 0.05);
+  color: @text-secondary;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+/* 任务项 */
+.task-item {
+  padding: @layout-space-sm;
+  border-bottom: 1px solid @border-color;
+  transition: @transition-fast;
+}
+
+.task-item:last-child {
+  border-bottom: none;
+}
+
+.task-item:hover {
+  background-color: @hover-bg;
+}
+
+.task-item.completed {
+  background-color: rgba(0, 0, 0, 0.01);
+}
+
+.task-item.failed {
+  background-color: rgba(249, 72, 62, 0.05);
+}
+
+.task-item.running {
+  background-color: rgba(24, 144, 255, 0.05);
+}
+
+.task-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.task-icon {
+  width: 20px;
+  height: 20px;
+  border-radius: @border-radius-circle;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  margin-right: 8px;
+  background-color: rgba(0, 0, 0, 0.05);
+  color: @text-secondary;
+}
+
+.task-icon.pending {
+  background-color: rgba(0, 0, 0, 0.05);
+  color: @text-secondary;
+}
+
+.task-icon.running {
+  background-color: rgba(24, 144, 255, 0.15);
+  color: @info-color;
+}
+
+.task-icon.completed {
+  background-color: rgba(6, 177, 171, 0.15);
+  color: @success-color;
+}
+
+.task-icon.failed {
+  background-color: rgba(249, 72, 62, 0.15);
+  color: @error-color;
+}
+
+.task-name {
+  font-size: 14px;
+  font-weight: 500;
+  color: @text-primary;
+  flex-grow: 1;
+}
+
+.task-status-label {
+  padding: 2px 8px;
+  border-radius: @border-radius-pill;
+  font-size: 12px;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+}
+
+.task-status-label.pending {
+  background-color: rgba(0, 0, 0, 0.05);
+  color: @text-secondary;
+}
+
+.task-status-label.running {
+  background-color: rgba(24, 144, 255, 0.1);
+  color: @info-color;
+}
+
+.task-status-label.completed {
+  background-color: rgba(6, 177, 171, 0.1);
+  color: @success-color;
+}
+
+.task-status-label.failed {
+  background-color: rgba(249, 72, 62, 0.1);
+  color: @error-color;
+}
+
+.task-description {
+  font-size: 13px;
+  color: @text-secondary;
+  margin-left: 28px;
+  margin-bottom: 8px;
+}
+
+/* 任务执行结果样式 */
+.task-result {
+  margin-left: 28px;
+  margin-top: 10px;
+  margin-bottom: 12px;
+  padding: 12px;
+  border-radius: @border-radius-base;
+  background-color: rgba(6, 177, 171, 0.05);
+  border: 1px solid rgba(6, 177, 171, 0.1);
+  position: relative;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.task-result:hover {
+  border-color: rgba(6, 177, 171, 0.2);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
+}
+
+.result-header {
+  font-size: 13px;
+  font-weight: 500;
+  color: @success-color;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+}
+
+.result-header::before {
+  content: "";
+  display: inline-block;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background-color: @success-color;
+  margin-right: 6px;
+}
+
+.result-content {
+  font-family: "Source Code Pro", Consolas, Monaco, "Andale Mono", monospace;
+  font-size: 14px;
+  line-height: 1.6;
+  color: @text-primary;
+  white-space: pre-wrap;
+  word-break: break-word;
+  background-color: rgba(255, 255, 255, 0.8);
+  padding: 12px 14px;
+  border-radius: 4px;
+  border-left: 3px solid @success-color;
+  overflow: auto;
+  max-height: 300px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  transition: all 0.2s ease;
+}
+
+.result-content:hover {
+  background-color: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .result-content {
+    font-size: 13px;
+    padding: 8px 10px;
+  }
+}
+
+/* 执行结果中的特殊格式化 */
+.result-content pre,
+.result-content code {
+  background-color: rgba(0, 0, 0, 0.02);
+  padding: 2px 4px;
+  border-radius: 3px;
+  font-family: inherit;
+}
+
+/* 执行结果中的表格样式 */
+.result-content table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 8px 0;
+}
+
+.result-content th,
+.result-content td {
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  padding: 6px 8px;
+  text-align: left;
+}
+
+.result-content th {
+  background-color: rgba(0, 0, 0, 0.02);
+  font-weight: 500;
+}
+
+.task-error {
+  margin-left: 28px;
+  padding: 8px 12px;
+  border-radius: @border-radius-base;
+  background-color: rgba(249, 72, 62, 0.05);
+  border: 1px solid rgba(249, 72, 62, 0.1);
+  color: @error-color;
+  font-size: 13px;
+  line-height: 1.5;
+  margin-top: 8px;
+  margin-bottom: 8px;
+}
+
+/* 任务状态摘要 */
+.task-status-summary {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 8px;
+  padding: 8px;
+  border-radius: @border-radius-base;
+  background-color: rgba(0, 0, 0, 0.02);
+}
+
+.status-item {
+  display: flex;
+  align-items: center;
+}
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px 2px 6px;
+  border-radius: @border-radius-pill;
+  font-size: 12px;
+  font-weight: 500;
+  position: relative;
+}
+
+.status-badge:before {
+  content: "";
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  margin-right: 5px;
+}
+
+.status-badge.pending {
+  background-color: rgba(0, 0, 0, 0.05);
+  color: @text-secondary;
+}
+
+.status-badge.pending:before {
+  background-color: @text-secondary;
+}
+
+.status-badge.running {
+  background-color: rgba(24, 144, 255, 0.1);
+  color: @info-color;
+}
+
+.status-badge.running:before {
+  background-color: @info-color;
+}
+
+.status-badge.completed {
+  background-color: rgba(6, 177, 171, 0.1);
+  color: @success-color;
+}
+
+.status-badge.completed:before {
+  background-color: @success-color;
+}
+
+.status-badge.failed {
+  background-color: rgba(249, 72, 62, 0.1);
+  color: @error-color;
+}
+
+.status-badge.failed:before {
+  background-color: @error-color;
+}
+
+/* 执行阶段状态 */
+.execution-phase-status {
+  display: flex;
+  align-items: center;
+  margin-left: 28px;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.phase-indicator {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px 3px 8px;
+  border-radius: @border-radius-pill;
+  font-size: 12px;
+  font-weight: 500;
+  position: relative;
+  background-color: rgba(0, 0, 0, 0.05);
+  color: @text-secondary;
+}
+
+.phase-indicator::before {
+  content: "";
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  margin-right: 5px;
+  background-color: @text-secondary;
+}
+
+.phase-planning {
+  background-color: rgba(24, 144, 255, 0.1);
+  color: @info-color;
+}
+
+.phase-planning::before {
+  background-color: @info-color;
+}
+
+.phase-executing {
+  background-color: rgba(250, 173, 20, 0.1);
+  color: @warning-color;
+}
+
+.phase-executing::before {
+  background-color: @warning-color;
+}
+
+.phase-completed {
+  background-color: rgba(6, 177, 171, 0.1);
+  color: @success-color;
+}
+
+.phase-completed::before {
+  background-color: @success-color;
+}
+
+.phase-error {
+  background-color: rgba(249, 72, 62, 0.1);
+  color: @error-color;
+}
+
+.phase-error::before {
+  background-color: @error-color;
+}
+
+.error-message {
+  color: @error-color;
+  font-size: 13px;
+  background-color: rgba(249, 72, 62, 0.05);
+  padding: 8px 12px;
+  border-radius: @border-radius-base;
+  margin-top: 8px;
+}
+
+/* 加载点动画 */
+.loading-dots {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dot {
+  width: 4px;
+  height: 4px;
+  margin: 0 2px;
+  border-radius: 50%;
+  background-color: currentColor;
+  animation: dot-flashing 1s infinite alternate;
+}
+
+.dot:nth-child(1) {
+  animation-delay: 0s;
+}
+
+.dot:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.dot:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes dot-flashing {
+  0% {
+    opacity: 0.2;
+    transform: scale(0.8);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1.1);
+  }
+}
+
+/* 任务规划动画效果 */
+.task-planning-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  margin: 0 4px;
+  border-radius: 50%;
+  background-color: @primary-color;
+  animation: task-planning-pulse 1.5s infinite ease-in-out;
+}
+
+.task-planning-dot:nth-child(1) {
+  animation-delay: 0s;
+}
+
+.task-planning-dot:nth-child(2) {
+  animation-delay: 0.3s;
+}
+
+.task-planning-dot:nth-child(3) {
+  animation-delay: 0.6s;
+}
+
+@keyframes task-planning-pulse {
+  0% {
+    transform: scale(0.8);
+    opacity: 0.3;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(0.8);
+    opacity: 0.3;
+  }
+} 

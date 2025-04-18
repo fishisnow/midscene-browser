@@ -1,0 +1,208 @@
+@import '../common.less';
+
+/* 主布局容器 */
+.playground-container {
+  width: 100%;
+  height: 100vh;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  background-color: #ffffff;
+  padding-top: @header-height;
+  padding-bottom: 0;
+  min-width: 300px;
+  max-width: @container-width-max;
+  margin: 0 auto;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.playground-container.vertical-mode {
+  height: 100vh;
+}
+
+/* 头部导航栏 */
+.header-nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: @header-height;
+  background-color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 @side-horizontal-padding;
+  box-shadow: @box-shadow-base;
+  z-index: 1000;
+  max-width: @container-width-max;
+  margin: 0 auto;
+  box-sizing: border-box;
+  border-bottom: 1px solid @border-color;
+  width: 100%;
+}
+
+/* 顶部工具栏 - 类似清言 */
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 15px;
+  background-color: #f8f8f8;
+  border-bottom: 1px solid @border-color;
+  margin-bottom: 10px;
+}
+
+.toolbar-left,
+.toolbar-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.tool-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: @border-radius-circle;
+  background-color: #fff;
+  border: 1px solid @border-color;
+  color: @text-secondary;
+  cursor: pointer;
+  transition: @transition-fast;
+}
+
+.tool-button:hover {
+  background-color: @primary-color;
+  color: #fff;
+  border-color: @primary-color;
+}
+
+/* Logo 容器 */
+.logo-container {
+  display: flex;
+  align-items: center;
+}
+
+.midscene-logo {
+  width: 24px;
+  height: 24px;
+  margin-right: 8px;
+  object-fit: contain;
+}
+
+.logo-text {
+  font-size: 14px;
+  font-weight: 600;
+  color: @text-primary;
+}
+
+/* 头部操作区 */
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* 内容主区域 - 类似聊天界面 */
+.playground-content {
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
+  background-color: #ffffff;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between; /* 修改布局，确保顶部和底部元素分离 */
+  min-height: 0;
+}
+
+/* 聊天界面中间部分 */
+.conversation-area {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+}
+
+/* 底部输入区固定在底部 */
+.footer-input-area {
+  position: sticky;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 10;
+  background-color: #fff;
+  padding: 10px 15px;
+  border-top: 1px solid @border-color;
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+}
+
+/* 无缝表单 */
+.seamless-form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  height: calc(100vh - @header-height);
+  overflow: hidden;
+}
+
+/* 内容卡片 */
+.content-card {
+  flex-shrink: 0;
+}
+
+/* 知识库卡片包装 */
+.knowledge-wrapper {
+  flex-shrink: 0;
+}
+
+/* 任务列表包装 */
+.task-wrapper {
+  flex: 1;
+  overflow-y: auto;
+  margin-bottom: 10px;
+}
+
+/* 输入区域包装 */
+.input-wrapper {
+  flex-shrink: 0;
+  margin-bottom: 0;
+  padding-bottom: 0;
+  min-height: 60px;
+  /* 位于底部的样式 */
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+  z-index: 10;
+}
+
+/* 弹窗样式 */
+.settings-modal .ant-modal-header {
+  border-bottom: 1px solid @border-color;
+}
+
+.settings-modal .ant-modal-title {
+  font-weight: 600;
+  font-size: 16px;
+  color: @text-primary;
+}
+
+.settings-modal .ant-modal-footer {
+  border-top: 1px solid @border-color;
+}
+
+.settings-modal .ant-btn {
+  border-radius: @border-radius-base;
+}
+
+/* 响应式调整 */
+@media (max-width: 450px) {
+  .playground-container {
+    min-width: 100%;
+  }
+} 

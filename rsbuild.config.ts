@@ -10,7 +10,7 @@ export default defineConfig({
       source: {
         entry: {
           index: './src/index.tsx',
-          popup: './src/extension/popup.tsx',
+          popup: './src/views/popup/popup.tsx',
         },
       },
       output: {

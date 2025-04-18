@@ -1,0 +1,217 @@
+@import '../common.less';
+
+/* 输入区域容器 */
+.input-wrapper {
+  padding: 8px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  background-color: #fff;
+  border-radius: @border-radius-lg;
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+}
+
+/* 输入框容器 */
+.prompt-input-container {
+  border-radius: @border-radius-lg;
+  margin: 0;
+  padding: 5px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 输入框样式 */
+.textarea-container {
+  position: relative;
+  flex-grow: 1;
+  min-height: 0;
+}
+
+.input-with-button {
+  position: relative;
+  width: 100%;
+  display: flex;
+  align-items: flex-end;
+  border-radius: @border-radius-lg;
+  overflow: hidden;
+}
+
+.execute-button {
+  position: absolute;
+  right: 6px;
+  bottom: 6px;
+  width: 36px;
+  height: 36px;
+  border-radius: @border-radius-circle;
+  background-color: @primary-color;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: @transition-fast;
+  border: none;
+  cursor: pointer;
+  z-index: 5;
+}
+
+.execute-button:hover {
+  background-color: darken(@primary-color, 10%);
+  transform: scale(1.05);
+}
+
+.execute-button:active {
+  transform: scale(0.95);
+}
+
+.execute-button-icon {
+  font-size: 18px;
+  color: #fff;
+}
+
+/* Ant Design 输入框重写 */
+.ant-input-textarea {
+  position: relative;
+  padding-right: 48px;
+  transition: all 0.3s ease;
+  border-radius: @border-radius-lg;
+  border: 1px solid @border-color;
+  overflow: hidden;
+  box-shadow: none;
+  background-color: #fff;
+}
+
+.ant-input-textarea .ant-input {
+  border: none;
+  resize: none;
+  padding: 10px 12px;
+  min-height: 24px;
+  max-height: 120px;
+  font-size: 14px;
+  color: @text-primary;
+  background-color: transparent;
+  overflow-y: auto;
+}
+
+.ant-input-textarea:hover, 
+.ant-input-textarea:focus-within {
+  border-color: @primary-color;
+  box-shadow: 0 0 0 2px rgba(6, 177, 171, 0.1);
+}
+
+.input-with-button .ant-input-affix-wrapper {
+  padding-right: 50px;
+}
+
+.execute-button .ant-btn-icon-only > span {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 100%;
+}
+
+/* 输入框底部操作区 */
+.prompt-input-button-container {
+  display: none; /* 隐藏原始按钮容器，避免重复显示按钮 */
+}
+
+/* 重试按钮容器 */
+.retry-button-container {
+  text-align: center;
+  margin: 0;
+  padding: 8px 0;
+}
+
+.retry-button-container .ant-btn {
+  padding: 4px 12px;
+  height: 32px;
+  border-radius: @border-radius-pill;
+  background-color: rgba(0, 0, 0, 0.03);
+  color: @text-secondary;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid @border-color;
+}
+
+.retry-button-container .ant-btn:hover {
+  background-color: @hover-bg;
+  color: @primary-color;
+}
+
+.retry-icon {
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+}
+
+/* 输入框提示文本 */
+.ant-input::placeholder {
+  color: #b0b0b0;
+}
+
+/* Ant 表单组件调整 */
+.ant-form-item {
+  margin-bottom: 0;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+}
+
+.ant-form-item-control {
+  width: 100%;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.ant-form-item-control-input {
+  width: 100%;
+  min-height: 0;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.ant-form-item-control-input-content {
+  width: 100%;
+  min-height: 0;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 底部输入区操作按钮 */
+.input-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 5px 0;
+}
+
+.input-actions-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.input-action-button {
+  width: 28px;
+  height: 28px;
+  border-radius: @border-radius-circle;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: transparent;
+  color: @text-secondary;
+  cursor: pointer;
+  transition: @transition-fast;
+  border: none;
+}
+
+.input-action-button:hover {
+  color: @primary-color;
+  background-color: @hover-bg;
+} 

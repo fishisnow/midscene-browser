@@ -1,0 +1,29 @@
+/* 
+ * 样式入口文件
+ * 按照以下顺序引入样式文件：
+ * 1. 全局变量和基础设置
+ * 2. 基础重置样式
+ * 3. 布局组件样式
+ * 4. UI组件样式
+ * 5. 页面样式
+ */
+
+/* 1. 全局变量 */
+@import './common.less';
+
+/* 2. 基础重置样式 */
+@import './base/reset.less';
+
+/* 3. 布局组件样式 */
+@import './layout/container.less';
+@import './components/layout.less';
+
+/* 4. UI组件样式 */
+@import './components/buttons.less';
+@import './components/cards.less';
+@import './components/input.less';
+@import './components/tasks.less';
+@import './components/progress.less';
+
+/* 5. 页面样式 */
+@import './pages/popup.less'; 

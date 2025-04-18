@@ -1,8 +1,7 @@
 import {useState, useEffect} from 'react';
-import {Button, Typography, Badge, Tooltip, Modal, Form, Input} from 'antd';
-import {LeftOutlined, RightOutlined, PlusOutlined} from '@ant-design/icons';
+import {Button, Typography, Badge, Tooltip, Modal, Form, Input, Tabs} from 'antd';
+import {LeftOutlined, RightOutlined, PlusOutlined, BookOutlined, UserOutlined, SettingOutlined} from '@ant-design/icons';
 import systemKnowledgeData from '../config/system-knowledge.json';
-import '../styles/components.css';
 
 const {Paragraph, Text} = Typography;
 
@@ -22,15 +21,23 @@ interface KnowledgeCarouselProps {
 // 本地存储键名
 const STORAGE_KEY = 'midscene_custom_knowledge';
 
+// 知识库分类
+enum KnowledgeType {
+    ALL = 'all',
+    SYSTEM = 'system',
+    CUSTOM = 'custom'
+}
+
 export function KnowledgeCarousel({
-                                      onChange,
-                                      onSelected,
-                                      selectedKnowledge: externalSelectedKnowledge
-                                  }: KnowledgeCarouselProps) {
+    onChange,
+    onSelected,
+    selectedKnowledge: externalSelectedKnowledge
+}: KnowledgeCarouselProps) {
     const [currentIndex, setCurrentIndex] = useState(0);
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [customKnowledge, setCustomKnowledge] = useState<KnowledgeItem[]>([]);
     const [selectedKnowledgeLocal, setSelectedKnowledgeLocal] = useState<string>('');
+    const [activeTab, setActiveTab] = useState<KnowledgeType>(KnowledgeType.ALL);
     const [form] = Form.useForm();
 
     // 从配置文件加载系统内置的知识库
@@ -64,6 +71,13 @@ export function KnowledgeCarousel({
     // 计算所有知识条目
     const allKnowledge = [...systemKnowledge, ...customKnowledge];
 
+    // 根据当前激活的标签页过滤知识库列表
+    const filteredKnowledge = activeTab === KnowledgeType.ALL 
+        ? allKnowledge
+        : activeTab === KnowledgeType.SYSTEM
+            ? systemKnowledge
+            : customKnowledge;
+
     // 更新知识库时触发onChange
     useEffect(() => {
         if (onChange && selectedKnowledgeLocal) {
@@ -78,9 +92,9 @@ export function KnowledgeCarousel({
     }, [selectedKnowledgeLocal, customKnowledge, onChange, allKnowledge]);
 
     // 显示的知识库项（最多显示4个）
-    const visibleKnowledge = allKnowledge.slice(
+    const visibleKnowledge = filteredKnowledge.slice(
         currentIndex,
-        Math.min(currentIndex + 4, allKnowledge.length)
+        Math.min(currentIndex + 4, filteredKnowledge.length)
     );
 
     // 添加自定义知识
@@ -105,6 +119,9 @@ export function KnowledgeCarousel({
 
         form.resetFields();
         setIsModalVisible(false);
+        
+        // 切换到自定义知识标签
+        setActiveTab(KnowledgeType.CUSTOM);
     };
 
     // 处理知识选择
@@ -130,7 +147,7 @@ export function KnowledgeCarousel({
 
     // 后滚动
     const handleScrollNext = () => {
-        setCurrentIndex(prev => Math.min(allKnowledge.length - 1, prev + 1));
+        setCurrentIndex(prev => Math.min(filteredKnowledge.length - 4, prev + 1));
     };
 
     // 显示添加模态框
@@ -138,6 +155,40 @@ export function KnowledgeCarousel({
         form.resetFields();
         setIsModalVisible(true);
     };
+
+    // 切换标签页
+    const handleTabChange = (tabKey: KnowledgeType) => {
+        setActiveTab(tabKey);
+        setCurrentIndex(0); // 重置索引
+    };
+
+    // 渲染一个知识库卡片
+    const renderKnowledgeCard = (item: KnowledgeItem) => (
+        <div
+            key={item.name}
+            className={`knowledge-card ${
+                selectedKnowledgeLocal === item.name ? 'selected' : ''
+            } ${item.isCustom ? 'custom-knowledge' : 'system-knowledge'}`}
+            onClick={() => handleSelect(item.name)}
+        >
+            <div className="knowledge-card-icon">
+                {item.isCustom ? <UserOutlined /> : <BookOutlined />}
+            </div>
+            <div className="knowledge-card-title">{item.name}</div>
+            <Tooltip 
+                title={item.content} 
+                placement="top" 
+                overlayStyle={{ maxWidth: '300px' }}
+                color="#fff"
+                overlayInnerStyle={{ color: '#333', fontSize: '12px' }}
+            >
+                <div className="knowledge-indicator">
+                    <div className="knowledge-status-dot"></div>
+                    <span>查看</span>
+                </div>
+            </Tooltip>
+        </div>
+    );
 
     return (
         <div className="knowledge-carousel">
@@ -158,6 +209,28 @@ export function KnowledgeCarousel({
                 />
             </div>
 
+            {/* 知识库分类标签 */}
+            <div className="knowledge-tabs">
+                <div 
+                    className={`knowledge-tab ${activeTab === KnowledgeType.ALL ? 'active' : ''}`}
+                    onClick={() => handleTabChange(KnowledgeType.ALL)}
+                >
+                    全部
+                </div>
+                <div 
+                    className={`knowledge-tab ${activeTab === KnowledgeType.SYSTEM ? 'active' : ''}`}
+                    onClick={() => handleTabChange(KnowledgeType.SYSTEM)}
+                >
+                    系统
+                </div>
+                <div 
+                    className={`knowledge-tab ${activeTab === KnowledgeType.CUSTOM ? 'active' : ''}`}
+                    onClick={() => handleTabChange(KnowledgeType.CUSTOM)}
+                >
+                    自定义
+                </div>
+            </div>
+
             <div className="knowledge-carousel-container">
                 <Button
                     type="text"
@@ -169,31 +242,16 @@ export function KnowledgeCarousel({
 
                 <div className="knowledge-cards">
                     {visibleKnowledge.length > 0 ? (
-                        visibleKnowledge.map((item) => (
-                            <div
-                                key={item.name}
-                                className={`knowledge-card ${
-                                    selectedKnowledgeLocal === item.name ? 'selected' : ''
-                                } ${item.isCustom ? 'custom-knowledge' : 'system-knowledge'}`}
-                                onClick={() => handleSelect(item.name)}
-                            >
-                                <div className="ant-card-head">
-                                    <div className="ant-card-head-title">{item.name}</div>
-                                </div>
-                                <div className="ant-card-body">
-                                    <Tooltip title={item.content} overlayStyle={{ maxWidth: '300px' }}>
-                                        <div className="knowledge-indicator">
-                                            <div className="knowledge-status-dot"></div>
-                                        </div>
-                                    </Tooltip>
-                                </div>
-                            </div>
-                        ))
+                        visibleKnowledge.map(renderKnowledgeCard)
                     ) : (
                         <div className="empty-knowledge">
-                            <Button type="link" onClick={showAddModal} size="small">
-                                添加知识
-                            </Button>
+                            {activeTab === KnowledgeType.CUSTOM ? (
+                                <Button type="link" onClick={showAddModal} size="small">
+                                    添加自定义知识
+                                </Button>
+                            ) : (
+                                <span>没有可用的知识库</span>
+                            )}
                         </div>
                     )}
                 </div>
@@ -201,7 +259,7 @@ export function KnowledgeCarousel({
                 <Button
                     type="text"
                     icon={<RightOutlined/>}
-                    disabled={currentIndex >= allKnowledge.length - 4}
+                    disabled={currentIndex >= filteredKnowledge.length - 4}
                     onClick={handleScrollNext}
                     className="carousel-nav-button next-button"
                 />

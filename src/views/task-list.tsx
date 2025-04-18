@@ -1,7 +1,7 @@
 import { Card, List, Tooltip, Progress, Alert, Button } from 'antd';
 import { CheckCircleOutlined, InfoCircleOutlined, LoadingOutlined, ThunderboltOutlined, CloseCircleOutlined, ClockCircleOutlined } from '@ant-design/icons';
-import { ActivityItem } from './composite-agent';
-import '../styles/components.css';
+import { ActivityItem } from '../agent/composite-agent.ts';
+import { RetryButton } from '../components/common';
 
 // 添加任务状态枚举
 export enum TaskStatus {
@@ -39,9 +39,10 @@ export const TaskList: React.FC<TaskListProps> = ({
 }) => {
   const completedTasks = tasks.filter(t => t.isCompleted || t.status === TaskStatus.COMPLETED);
   const currentTask = tasks[currentTaskIndex] || tasks.find(t => t.status === TaskStatus.RUNNING);
-  const pendingTasks = tasks.filter(t => t.status === TaskStatus.PENDING);
+  const pendingTasks = tasks.filter(t => !t.isCompleted && t.status === TaskStatus.PENDING);
   const failedTasks = tasks.filter(t => t.status === TaskStatus.FAILED);
   const showPlanningPhase = loading && tasks.length === 0;
+  const hasError = error || failedTasks.length > 0;
 
   return (
     <Card 
@@ -88,6 +89,7 @@ export const TaskList: React.FC<TaskListProps> = ({
           }
           showIcon
           style={{ marginBottom: 16 }}
+          action={onRetry ? <RetryButton onClick={onRetry} /> : null}
         />
       )}
 
@@ -117,7 +119,7 @@ export const TaskList: React.FC<TaskListProps> = ({
             style={{ marginBottom: 16 }}
           />
           
-          <Tooltip title={loading ? '正在执行任务中...' : (error ? '执行出错' : '所有任务已完成')}>
+          <Tooltip title={loading ? '正在执行任务中...' : (hasError ? '执行出错' : '所有任务已完成')}>
             <div className="task-status">
               {loading ? (
                 <div>
@@ -126,12 +128,12 @@ export const TaskList: React.FC<TaskListProps> = ({
                 </div>
               ) : (
                 <div>
-                  {error ? (
+                  {hasError ? (
                     <CloseCircleOutlined style={{ color: '#ff4d4f', marginRight: 8 }} />
                   ) : (
                     <CheckCircleOutlined style={{ color: '#52c41a', marginRight: 8 }} />
                   )}
-                  {error ? '执行出错' : (tasks.length > 0 ? '所有任务已完成' : '暂无任务')}
+                  {hasError ? '执行出错' : (tasks.length > 0 ? '所有任务已完成' : '暂无任务')}
                 </div>
               )}
             </div>
@@ -184,7 +186,12 @@ export const TaskList: React.FC<TaskListProps> = ({
                     <div className="task-result">
                       <div className="result-header">执行结果:</div>
                       <div className="result-content">
-                        {typeof task.result === 'object' ? JSON.stringify(task.result, null, 2) : task.result}
+                        {typeof task.result === 'object' 
+                          ? JSON.stringify(task.result, null, 2) 
+                          : typeof task.result === 'string' && task.result.includes('\n')
+                            ? task.result
+                            : task.result
+                        }
                       </div>
                     </div>
                   )}

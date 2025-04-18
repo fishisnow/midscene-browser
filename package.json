@@ -1,0 +1,37 @@
+{
+  "name": "midscene-browser",
+  "private": true,
+  "version": "0.0.1",
+  "type": "module",
+  "scripts": {
+    "dev": "rsbuild dev",
+    "build": "rsbuild build && npm run pack-extension",
+    "pack-extension": "node scripts/pack-extension.js"
+  },
+  "dependencies": {
+    "@ant-design/icons": "^5.3.1",
+    "@midscene/core": "^0.14.3",
+    "@midscene/shared": "^0.14.3",
+    "@midscene/visualizer": "^0.14.3",
+    "@midscene/web": "^0.14.3",
+    "antd": "^5.21.6",
+    "dayjs": "1.11.11",
+    "lucide-react": "^0.488.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "zustand": "4.5.2"
+  },
+  "devDependencies": {
+    "@rsbuild/core": "^1.3.6",
+    "@rsbuild/plugin-less": "^1.1.1",
+    "@rsbuild/plugin-node-polyfill": "1.3.0",
+    "@rsbuild/plugin-react": "^1.1.1",
+    "@types/chrome": "0.0.279",
+    "@types/react": "^18.3.18",
+    "@types/react-dom": "^18.3.5",
+    "archiver": "^6.0.0",
+    "css-selector-generator": "^3.6.4",
+    "less": "^4.2.0",
+    "typescript": "^5.8.2"
+  }
+}

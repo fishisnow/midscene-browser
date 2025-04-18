@@ -1,6 +1,6 @@
 import {useState, useEffect} from 'react';
-import {Button, Typography, Badge, Tooltip, Modal, Form, Input, Tabs} from 'antd';
-import {LeftOutlined, RightOutlined, PlusOutlined, BookOutlined, UserOutlined, SettingOutlined} from '@ant-design/icons';
+import {Button, Typography, Badge, Tooltip, Modal, Form, Input} from 'antd';
+import {LeftOutlined, RightOutlined, PlusOutlined, BookOutlined, UserOutlined} from '@ant-design/icons';
 import systemKnowledgeData from '../config/system-knowledge.json';
 
 const {Paragraph, Text} = Typography;
@@ -91,7 +91,7 @@ export function KnowledgeCarousel({
         }
     }, [selectedKnowledgeLocal, customKnowledge, onChange, allKnowledge]);
 
-    // 显示的知识库项（最多显示4个）
+    // 显示的知识库项（每页最多显示4个）
     const visibleKnowledge = filteredKnowledge.slice(
         currentIndex,
         Math.min(currentIndex + 4, filteredKnowledge.length)
@@ -190,8 +190,12 @@ export function KnowledgeCarousel({
         </div>
     );
 
+    // 判断是否需要显示导航按钮
+    const showPrevButton = currentIndex > 0;
+    const showNextButton = currentIndex < filteredKnowledge.length - 4;
+
     return (
-        <div className="knowledge-carousel">
+        <div className="knowledge-carousel" style={{ maxWidth: '360px' }}>
             <div className="knowledge-carousel-header">
                 <span className="knowledge-carousel-title">高级知识库</span>
                 {selectedKnowledgeLocal && (
@@ -232,13 +236,14 @@ export function KnowledgeCarousel({
             </div>
 
             <div className="knowledge-carousel-container">
-                <Button
-                    type="text"
-                    icon={<LeftOutlined/>}
-                    disabled={currentIndex === 0}
-                    onClick={handleScrollPrev}
-                    className="carousel-nav-button prev-button"
-                />
+                {showPrevButton && (
+                    <Button
+                        type="text"
+                        icon={<LeftOutlined/>}
+                        onClick={handleScrollPrev}
+                        className="carousel-nav-button prev-button"
+                    />
+                )}
 
                 <div className="knowledge-cards">
                     {visibleKnowledge.length > 0 ? (
@@ -256,13 +261,14 @@ export function KnowledgeCarousel({
                     )}
                 </div>
 
-                <Button
-                    type="text"
-                    icon={<RightOutlined/>}
-                    disabled={currentIndex >= filteredKnowledge.length - 4}
-                    onClick={handleScrollNext}
-                    className="carousel-nav-button next-button"
-                />
+                {showNextButton && (
+                    <Button
+                        type="text"
+                        icon={<RightOutlined/>}
+                        onClick={handleScrollNext}
+                        className="carousel-nav-button next-button"
+                    />
+                )}
             </div>
 
             {/* 添加知识模态框 */}

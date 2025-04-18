@@ -1,7 +1,7 @@
 import { Card, List, Tooltip, Progress, Alert, Button } from 'antd';
 import { CheckCircleOutlined, InfoCircleOutlined, LoadingOutlined, ThunderboltOutlined, CloseCircleOutlined, ClockCircleOutlined } from '@ant-design/icons';
 import { ActivityItem } from '../agent/composite-agent.ts';
-import { RetryButton } from '../components/common';
+import { RetryButton } from './popup/components/retry-button.tsx';
 
 // 添加任务状态枚举
 export enum TaskStatus {

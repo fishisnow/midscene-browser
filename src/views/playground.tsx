@@ -11,7 +11,8 @@ import {useCallback, useEffect, useRef, useState} from 'react';
 import {CompositeAgent, TaskPlan} from '../agent/composite-agent.ts';
 import {TaskList, TaskWithStatus, TaskStatus} from './task-list.tsx';
 import {KnowledgeCarousel} from './knowledge-carousel.tsx';
-import {ExecuteButton, RetryButton} from '../components/common';
+import {ExecuteButton} from './popup/components/execute-button.tsx';
+import {RetryButton} from './popup/components/retry-button.tsx';
 
 // Header组件定义
 const Header = ({title, children}: { title: string, children?: React.ReactNode }) => {

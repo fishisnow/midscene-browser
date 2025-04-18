@@ -59,13 +59,15 @@
   transition: @transition-fast;
   border: none;
   cursor: pointer;
-  box-shadow: none;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   margin-left: auto;
   flex-shrink: 0;
+  transform-origin: center center;
 }
 
 .execute-button:hover {
   background-color: darken(@primary-color, 10%);
+  transform: scale(1.05);
 }
 
 .execute-button:active {
@@ -78,7 +80,7 @@
 }
 
 .execute-button-icon {
-  font-size: 16px;
+  font-size: 15px;
   color: #fff;
 }
 

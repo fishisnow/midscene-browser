@@ -56,7 +56,7 @@
   background-color: #fafafa;
   border-radius: @border-radius-base;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
-  padding: 10px 8px;
+  padding: 10px 10px;
   border: 1px solid @border-color;
   transition: @transition-fast;
   max-width: 100%;
@@ -111,7 +111,7 @@
   display: flex;
   align-items: center;
   border-radius: @border-radius-base;
-  padding: 4px;
+  padding: 0 5px;
   overflow: hidden;
 }
 
@@ -148,15 +148,16 @@
 /* 推荐工具卡片风格 */
 .knowledge-cards {
   display: flex;
-  justify-content: flex-start;
+  justify-content: center;
   align-items: center;
   width: 100%;
-  overflow-x: auto;
-  padding: 6px 0;
+  overflow-x: hidden;
+  padding: 6px 12px;
   scroll-behavior: smooth;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none; /* Firefox */
   -ms-overflow-style: none; /* IE and Edge */
+  gap: 10px;
 }
 
 .knowledge-cards::-webkit-scrollbar {
@@ -166,14 +167,14 @@
 /* 推荐工具卡片样式 */
 .knowledge-card {
   flex: 0 0 auto;
-  min-width: 65px;
-  max-width: 65px;
-  height: 60px;
+  min-width: 60px;
+  max-width: 60px;
+  height: 58px;
   border-radius: @border-radius-base;
   border: 1px solid @border-color;
   transition: @transition-fast;
   padding: 5px 3px;
-  margin: 0 3px;
+  margin: 0;
   cursor: pointer;
   background-color: #fff;
   position: relative;
@@ -284,29 +285,44 @@
 
 /* 轮播导航按钮 */
 .carousel-nav-button {
-  width: 20px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
   border-radius: @border-radius-circle;
   border: 1px solid @border-color;
-  background-color: #fff;
+  background-color: rgba(255, 255, 255, 0.9);
   color: @text-secondary;
   display: flex;
   align-items: center;
   justify-content: center;
   transition: @transition-fast;
   cursor: pointer;
-  z-index: 2;
-  margin: 0 2px;
+  z-index: 10;
+  margin: 0;
+  padding: 0;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  opacity: 0.95;
   flex-shrink: 0;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.carousel-nav-button.prev-button {
+  left: 1px;
+}
+
+.carousel-nav-button.next-button {
+  right: 1px;
 }
 
 .carousel-nav-button:hover:not(:disabled) {
   background-color: @primary-color;
   color: #fff;
+  opacity: 1;
 }
 
 .carousel-nav-button:disabled {
-  opacity: 0.5;
+  opacity: 0;
   cursor: not-allowed;
 }
 

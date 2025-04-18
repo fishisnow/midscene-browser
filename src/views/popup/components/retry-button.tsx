@@ -10,7 +10,7 @@ interface RetryButtonProps {
   className?: string;
 }
 
-const RetryButton: React.FC<RetryButtonProps> = ({ 
+export const RetryButton: React.FC<RetryButtonProps> = ({
   onClick, 
   loading = false,
   disabled = false,
@@ -31,5 +31,3 @@ const RetryButton: React.FC<RetryButtonProps> = ({
     </div>
   );
 };
-
-export default RetryButton; 

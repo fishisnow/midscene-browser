@@ -1,7 +1,6 @@
 import type {UIContext} from '@midscene/core';
 import {overrideAIConfig} from '@midscene/core/env';
 import {
-    EnvConfig,
     type PlaygroundResult,
     useEnvConfig,
 } from '@midscene/visualizer';
@@ -63,35 +62,6 @@ enum ExecutionPhase {
     ERROR = 'error'
 }
 
-// 设置对话框组件
-const SettingsModal = ({visible, onClose}: { visible: boolean; onClose: () => void }) => {
-    return (
-        <Modal
-            title="环境配置"
-            open={visible}
-            onCancel={onClose}
-            destroyOnClose={true}
-            maskClosable={true}
-            centered={true}
-            className="settings-modal"
-            footer={[
-                <Button key="close" type="primary" onClick={onClose}>
-                    确认
-                </Button>
-            ]}
-            width={700}
-        >
-            <div className="settings-modal-content">
-                <h3>浏览器内请求配置</h3>
-                <p className="settings-description">
-                    这些设置将影响浏览器自动化的行为和性能。请根据需要进行调整。
-                </p>
-                <EnvConfig/>
-            </div>
-        </Modal>
-    );
-};
-
 // Browser Extension Playground Component
 export function BrowserExtensionPlayground({
                                                getAgent,
@@ -115,17 +85,21 @@ export function BrowserExtensionPlayground({
     const [showKnowledgeModal, setShowKnowledgeModal] = useState(false);
     // 输入内容
     const [inputValue, setInputValue] = useState('');
-    // 存储当前任务计划
+    const [editingConfig, setEditingConfig] = useState(false);
 
     // Form and environment configuration
     const [form] = Form.useForm();
     const [knowledgeForm] = Form.useForm();
     const inputRef = useRef<any>(null);
 
-    const {config} = useEnvConfig();
+    const {config, configString, loadConfig} = useEnvConfig();
+    const [tempConfigString, setTempConfigString] = useState(configString);
     const forceSameTabNavigation = useEnvConfig(
         (state) => state.forceSameTabNavigation,
     );
+    
+    // 记录上次环境配置的状态
+    const lastConfigRef = useRef(config);
 
     const compositeAgentRef = useRef<CompositeAgent | null>(null);
     const currentRunningIdRef = useRef<number | null>(0);
@@ -460,14 +434,55 @@ export function BrowserExtensionPlayground({
         setSelectedKnowledge(name);
     };
 
-    // 处理设置按钮点击
+    // 处理设置按钮点击 - 执行环境配置相关操作
     const handleOpenSettings = () => {
+        // 保存当前配置状态
+        lastConfigRef.current = config;
         setSettingsVisible(true);
+        setTempConfigString(configString);
+        setEditingConfig(false);
     };
-
+    
     // 处理设置对话框关闭
     const handleCloseSettings = () => {
         setSettingsVisible(false);
+    };
+
+    // 处理设置保存
+    const handleSaveSettings = () => {
+        if (editingConfig) {
+            loadConfig(tempConfigString);
+            
+            // 检查配置是否改变，如果改变了可能需要刷新页面
+            if (JSON.stringify(lastConfigRef.current) !== JSON.stringify(config)) {
+                console.log('配置已更改，刷新页面...');
+                // 可能的话，这里还可以添加一个重新加载的提示
+                message.success('环境配置已更新');
+            }
+        }
+        setSettingsVisible(false);
+        setEditingConfig(false);
+    };
+
+    // 将配置字符串转换为对象，以便显示键而隐藏值
+    const getConfigObject = (configStr: string) => {
+        const result: Record<string, string> = {};
+        if (!configStr) return result;
+
+        const lines = configStr.split('\n');
+        for (const line of lines) {
+            const trimLine = line.trim();
+            if (!trimLine || trimLine.startsWith('#')) continue;
+            
+            const separator = trimLine.indexOf('=');
+            if (separator > 0) {
+                const key = trimLine.substring(0, separator).trim();
+                if (key) {
+                    result[key] = '***';
+                }
+            }
+        }
+        return result;
     };
 
     // 计算显示相关数据
@@ -611,6 +626,7 @@ export function BrowserExtensionPlayground({
                                             onClick={handleExecuteClick}
                                             disabled={loading || !inputValue}
                                             loading={loading}
+                                            className="send-button execute-button"
                                         />
                                     </div>
                                 </div>
@@ -620,10 +636,93 @@ export function BrowserExtensionPlayground({
                 </div>
             </div>
 
-            <SettingsModal
-                visible={settingsVisible}
-                onClose={handleCloseSettings}
-            />
+            <Modal
+                title="环境配置"
+                open={settingsVisible}
+                onCancel={handleCloseSettings}
+                footer={[
+                    <Button key="cancel" onClick={handleCloseSettings}>
+                        取消
+                    </Button>,
+                    <Button key="save" type="primary" onClick={handleSaveSettings} disabled={!editingConfig}>
+                        保存
+                    </Button>
+                ]}
+                destroyOnClose={true}
+                maskClosable={true}
+                centered={true}
+                className="settings-modal"
+                width={700}
+            >
+                {editingConfig ? (
+                    <>
+                        <Input.TextArea
+                            rows={10}
+                            placeholder={'OPENAI_API_KEY=sk-...\nMIDSCENE_MODEL_NAME=gpt-4o-2024-08-06\n...'}
+                            value={tempConfigString}
+                            onChange={(e) => setTempConfigString(e.target.value)}
+                            style={{ whiteSpace: 'nowrap', wordWrap: 'break-word' }}
+                        />
+                        <div style={{ marginTop: '10px', textAlign: 'right' }}>
+                            <Button onClick={() => setEditingConfig(false)}>
+                                取消编辑
+                            </Button>
+                        </div>
+                    </>
+                ) : (
+                    <div className="masked-config-container">
+                        <div style={{ marginBottom: '15px' }}>
+                            <Button 
+                                type="primary" 
+                                onClick={() => setEditingConfig(true)}
+                                icon={<SettingOutlined />}
+                            >
+                                编辑配置
+                            </Button>
+                        </div>
+                        <div className="masked-config-list" style={{ 
+                            border: '1px solid #f0f0f0', 
+                            borderRadius: '4px', 
+                            padding: '10px', 
+                            maxHeight: '300px', 
+                            overflowY: 'auto' 
+                        }}>
+                            {Object.entries(getConfigObject(tempConfigString)).map(([key, _]) => (
+                                <div key={key} className="config-item" style={{ 
+                                    display: 'flex', 
+                                    justifyContent: 'space-between', 
+                                    padding: '8px 4px',
+                                    borderBottom: '1px solid #f0f0f0'
+                                }}>
+                                    <span className="config-key" style={{ fontWeight: 'bold' }}>{key}</span>
+                                    <span className="config-value" style={{ color: '#999' }}>***</span>
+                                </div>
+                            ))}
+                        </div>
+                        {Object.keys(getConfigObject(tempConfigString)).length === 0 && (
+                            <div className="no-config" style={{ 
+                                textAlign: 'center', 
+                                padding: '20px', 
+                                color: '#999',
+                                border: '1px dashed #d9d9d9',
+                                borderRadius: '4px'
+                            }}>
+                                <p>暂无配置，点击"编辑配置"添加</p>
+                            </div>
+                        )}
+                    </div>
+                )}
+                <div className="env-config-description" style={{ marginTop: '15px' }}>
+                    <p>格式为 KEY=VALUE，每行一个配置项。</p>
+                    <p>这些数据将<strong>仅保存在您的浏览器本地</strong>。</p>
+                    <p>常用配置：</p>
+                    <ul>
+                        <li>OPENAI_API_KEY - OpenAI API 密钥</li>
+                        <li>OPENAI_BASE_URL - OpenAI URL 地址</li>
+                        <li>MIDSCENE_MODEL_NAME - 模型名称</li>
+                    </ul>
+                </div>
+            </Modal>
 
             <Modal
                 title="添加知识"

@@ -180,9 +180,7 @@ export function KnowledgeCarousel({
             <Tooltip 
                 title={item.content} 
                 placement="top" 
-                overlayStyle={{ maxWidth: '300px' }}
                 color="#fff"
-                overlayInnerStyle={{ color: '#333', fontSize: '12px' }}
             >
                 <div className="knowledge-indicator">
                     <div className="knowledge-status-dot"></div>

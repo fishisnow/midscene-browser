@@ -52,15 +52,15 @@
 
 /* 知识库卡片区域 - 浏览器插件风格 */
 .knowledge-carousel {
-  margin: 5px auto 10px;
+  margin: 5px auto 12px;
   background-color: #fff;
   border-radius: 8px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-  padding: 10px 8px;
+  padding: 10px;
   border: 1px solid @border-color;
   transition: @transition-fast;
   width: 100%;
-  max-width: @container-width-max - 30px; /* 使用变量，减去内边距确保不超出 */
+  max-width: 340px;
   box-sizing: border-box;
   position: relative;
   overflow: visible;
@@ -126,16 +126,20 @@
   margin-bottom: 8px;
   border-bottom: 1px solid @border-color;
   padding-bottom: 6px;
+  justify-content: space-around;
+  width: 100%;
 }
 
 .knowledge-tab {
-  padding: 4px 8px;
+  padding: 4px 10px;
   font-size: 12px;
   color: @text-secondary;
   cursor: pointer;
   border-radius: @border-radius-base;
   transition: @transition-fast;
-  margin-right: 6px;
+  margin-right: 0;
+  flex: 1;
+  text-align: center;
 }
 
 .knowledge-tab.active {
@@ -153,7 +157,7 @@
 .knowledge-cards {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 6px;
+  gap: 8px;
   width: 100%;
   padding: 2px 0;
 }

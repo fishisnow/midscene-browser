@@ -46,42 +46,15 @@
   color: @primary-color;
 }
 
-/* 执行按钮 */
-.execute-button {
+/* 圆形按钮 */
+.ant-btn-circle {
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background-color: @primary-color;
-  color: #fff;
+  padding: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: @transition-fast;
-  border: none;
-  cursor: pointer;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  margin-left: auto;
-  flex-shrink: 0;
-  transform-origin: center center;
-}
-
-.execute-button:hover {
-  background-color: darken(@primary-color, 10%);
-  transform: scale(1.05);
-}
-
-.execute-button:active {
-  transform: scale(0.95);
-}
-
-.execute-button:disabled {
-  background-color: #ccc;
-  cursor: not-allowed;
-}
-
-.execute-button-icon {
-  font-size: 15px;
-  color: #fff;
 }
 
 /* 重试按钮 */

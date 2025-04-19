@@ -6,6 +6,7 @@
 @side-bg: #F9FAFB;
 @title-bg: @side-bg;
 @border-color: #F0F0F0;
+@border-color-base: #F0F0F0;
 @heavy-border-color: #E5E5E5;
 
 @selected-bg: rgba(6, 177, 171, 0.1);
@@ -35,7 +36,8 @@
 
 // 容器尺寸 - 浏览器插件
 @container-width-max: 350px;  // 浏览器插件典型宽度
-@container-padding: 8px;      // 插件内边距
+@input-container-width: 320px; // 调整输入框容器宽度
+@container-padding: 10px;     // 插件内边距
 @header-height: 50px;
 
 // 状态颜色
@@ -59,6 +61,11 @@
 // 动画
 @transition-base: all 0.25s cubic-bezier(0.25, 0.8, 0.25, 1);
 @transition-fast: all 0.2s ease;
+
+// Ant Design变量
+@component-background: #fff;
+@padding-md: 12px;
+@padding-sm: 8px;
 
 // 插件容器和布局通用样式
 .extension-container {

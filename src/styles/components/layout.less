@@ -163,13 +163,14 @@
   position: relative;
 }
 
+/* 移除冲突的背景色设置 */
 .input-with-button {
   display: flex;
   align-items: flex-end;
-  background-color: #f5f5f5;
+  background-color: transparent; /* 改为透明背景 */
   border-radius: 18px;
   padding: 6px 8px;
-  border: 1px solid rgba(0, 0, 0, 0.06);
+  border: none; /* 移除边框，由input.less控制 */
 }
 
 .input-with-button .ant-input-textarea {

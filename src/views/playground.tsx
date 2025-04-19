@@ -18,7 +18,7 @@ const Header = ({title, children}: { title: string, children?: React.ReactNode }
     return (
         <div className="header-nav">
             <div className="logo-container">
-                <img src="/icons/Midscene.png" alt="Logo" className="midscene-logo"/>
+                <img src="/icons/logo.png" alt="Logo" className="midscene-logo"/>
                 <span className="logo-text">{title}</span>
             </div>
             {children}
@@ -507,12 +507,12 @@ export function BrowserExtensionPlayground({
 
     return (
         <div className="playground-container">
-            <Header title="助手">
+            <Header title="Midscene Browser">
                 <div className="header-actions">
                     <Button
                         type="text"
                         icon={<GithubOutlined/>}
-                        onClick={() => window.open('https://github.com/midsceneai/midscene', '_blank')}
+                        onClick={() => window.open('https://github.com/fishisnow/midscene-browser', '_blank')}
                     />
                     <Button
                         type="text"

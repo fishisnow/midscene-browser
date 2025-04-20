@@ -4,8 +4,8 @@ import {
     type PlaygroundResult,
     useEnvConfig,
 } from '@midscene/visualizer';
-import {Form, message, Button, Progress, Modal, Input} from 'antd';
-import {SettingOutlined, GithubOutlined, BookOutlined} from '@ant-design/icons';
+import {Form, message, Button, Modal, Input} from 'antd';
+import {SettingOutlined, GithubOutlined, BookOutlined, WarningOutlined} from '@ant-design/icons';
 import {useCallback, useEffect, useRef, useState} from 'react';
 import {CompositeAgent, TaskPlan} from '../agent/composite-agent.ts';
 import {TaskList, TaskWithStatus, TaskStatus} from './task-list.tsx';
@@ -36,6 +36,10 @@ const ERROR_CODE_NOT_IMPLEMENTED_AS_DESIGNED = 'NOT_IMPLEMENTED_AS_DESIGNED';
 
 const formatErrorMessage = (e: any): string => {
     const errorMessage = e?.message || '';
+    // 处理403错误
+    if (errorMessage.includes('403 status code') || errorMessage.includes('failed to call AI model service: 403')) {
+        return '无法连接到AI服务。请检查您的网络连接和API设置。';
+    }
     if (errorMessage.includes('of different extension')) {
         return 'Conflicting extension detected. Please disable the suspicious plugins and refresh the page. Guide: https://midscenejs.com/quick-experience.html#faq';
     }
@@ -61,6 +65,18 @@ enum ExecutionPhase {
     COMPLETED = 'completed',
     ERROR = 'error'
 }
+
+// 添加判断是否为API相关错误的函数
+const isAPIRelatedError = (errorMessage?: string | null): boolean => {
+    if (!errorMessage) return false;
+    return (
+        errorMessage.includes('API') || 
+        errorMessage.includes('403') || 
+        errorMessage.includes('密钥') || 
+        errorMessage.includes('无法连接') ||
+        errorMessage.includes('model service')
+    );
+};
 
 // Browser Extension Playground Component
 export function BrowserExtensionPlayground({
@@ -220,6 +236,10 @@ export function BrowserExtensionPlayground({
 
     // 处理重新运行
     const handleRerunClick = () => {
+        // 如果是规划阶段失败，先重置状态
+        if (executionPhase === ExecutionPhase.ERROR && tasksWithStatus.length === 0) {
+            resetPlanningState();
+        }
         handleRun();
     };
 
@@ -357,6 +377,11 @@ export function BrowserExtensionPlayground({
                     console.error('任务规划失败:', planError);
                     result.error = formatErrorMessage(planError);
                     setExecutionPhase(ExecutionPhase.ERROR);
+                    
+                    // 如果是API相关错误，给用户提供更明确的引导
+                    if (isAPIRelatedError(result.error)) {
+                        message.error('AI服务连接失败，请检查API设置');
+                    }
                 }
             } catch (e: any) {
                 console.error('任务执行出错:', e);
@@ -408,21 +433,34 @@ export function BrowserExtensionPlayground({
         console.log(`执行时间: ${Date.now() - startTime}毫秒`);
     }, [form, getAgent, forceSameTabNavigation, advancedKnowledge]);
 
+    // 添加重置规划状态的函数
+    const resetPlanningState = () => {
+        setExecutionPhase(ExecutionPhase.IDLE);
+        setTasksWithStatus([]);
+        setResult(null);
+        setCurrentActivityIndex(-1);
+    };
+
     // 处理重试操作
     const handleRetry = useCallback(() => {
         // 重新执行任务但保留错误状态
         if (result?.error) {
-            // 保留任务列表，但清空错误状态
-            setTasksWithStatus(prevTasks => prevTasks.map(task => ({
-                ...task,
-                status: task.status === TaskStatus.FAILED ? TaskStatus.PENDING : task.status,
-                error: null
-            })));
+            if (tasksWithStatus.length > 0) {
+                // 有任务列表时，清空错误状态但保留任务
+                setTasksWithStatus(prevTasks => prevTasks.map(task => ({
+                    ...task,
+                    status: task.status === TaskStatus.FAILED ? TaskStatus.PENDING : task.status,
+                    error: null
+                })));
+            } else {
+                // 规划阶段失败，完全重置状态
+                resetPlanningState();
+            }
         }
 
         // 重新执行任务
         handleRun();
-    }, [handleRun, result]);
+    }, [handleRun, result, tasksWithStatus.length]);
 
     // 更新知识库配置
     const handleAdvancedKnowledgeChange = (value: Record<string, string>) => {
@@ -489,7 +527,7 @@ export function BrowserExtensionPlayground({
     const completedTasks = tasksWithStatus.filter(t => t.isCompleted || t.status === TaskStatus.COMPLETED);
     const errorTasks = tasksWithStatus.filter(t => t.status === TaskStatus.FAILED);
     const hasErrors = errorTasks.length > 0;
-    const completionPercentage = tasksWithStatus.length
+    tasksWithStatus.length
         ? Math.round((completedTasks.length / tasksWithStatus.length) * 100)
         : 0;
     const showRetryButton = (executionPhase === ExecutionPhase.COMPLETED || executionPhase === ExecutionPhase.ERROR) && !loading;
@@ -534,23 +572,6 @@ export function BrowserExtensionPlayground({
                 )}
 
                 <div className="conversation-area" style={{justifyContent: "center"}}>
-                    {tasksWithStatus.length > 0 && (
-                        <div className="task-statistics">
-                            <div className="stat-item">
-                                <span>任务进度</span>
-                                <Progress
-                                    percent={completionPercentage}
-                                    size="small"
-                                    status={hasErrors ? "exception" : "active"}
-                                />
-                            </div>
-                            <div className="stat-details">
-                                <span>完成任务: {completedTasks.length}/{tasksWithStatus.length}</span>
-                                {hasErrors && <span className="error-count">错误: {errorTasks.length}</span>}
-                            </div>
-                        </div>
-                    )}
-
                     <div className="tasks-container">
                         {loading && executionPhase === ExecutionPhase.PLANNING && tasksWithStatus.length === 0 ? (
                             <div className="task-list-placeholder">
@@ -560,6 +581,35 @@ export function BrowserExtensionPlayground({
                                     <div className="dot"></div>
                                 </div>
                                 <div>正在思考中...</div>
+                            </div>
+                        ) : executionPhase === ExecutionPhase.ERROR && !loading && tasksWithStatus.length === 0 ? (
+                            // 规划阶段错误显示
+                            <div className="task-list-placeholder error-state">
+                                <div className="error-icon">
+                                    <span role="img" aria-label="error" className="anticon anticon-warning">
+                                        <WarningOutlined style={{ fontSize: '28px', color: '#ff4d4f' }} />
+                                    </span>
+                                </div>
+                                <div className="error-title">任务规划失败</div>
+                                <div className="error-message">{result?.error || '未知错误'}</div>
+                                {isAPIRelatedError(result?.error) && (
+                                    <div className="error-actions" style={{ marginTop: '16px' }}>
+                                        <Button 
+                                            type="primary" 
+                                            onClick={handleOpenSettings}
+                                            icon={<SettingOutlined />}
+                                            style={{ marginRight: '8px' }}
+                                        >
+                                            调整API设置
+                                        </Button>
+                                        <Button 
+                                            onClick={handleRerunClick}
+                                            style={{ marginLeft: '8px' }}
+                                        >
+                                            重试
+                                        </Button>
+                                    </div>
+                                )}
                             </div>
                         ) : tasksWithStatus.length === 0 && !loading ? (
                             <div className="empty-state">

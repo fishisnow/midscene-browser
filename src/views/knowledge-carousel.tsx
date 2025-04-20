@@ -515,6 +515,10 @@ export function KnowledgeCarousel({
                 okText="删除"
                 cancelText="取消"
                 okButtonProps={{ danger: true }}
+                className="knowledge-delete-modal"
+                centered
+                width={340}
+                closeIcon={<CloseOutlined />}
             >
                 <p>确定要删除知识「{currentContent.name}」吗？此操作不可撤销。</p>
             </Modal>

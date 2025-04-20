@@ -18,8 +18,8 @@
 
 |    网站    |                    指令                     | 视频 |
 |:--------:|:-----------------------------------------:| :---: |
-| deepseek | 询问 deepseek 最新的国际新闻，提取与中国有关的内容，并识别是否与关税相关 |    <video src="https://github.com/user-attachments/assets/bb3d695a-fbff-4af1-b6cc-5e967c07ccee" height="300" />    |
-|  淘宝      | 我想要买一个300元左右的降噪耳机 | <video src="https://github.com/user-attachments/assets/75474138-f51f-4c54-b3cf-46d61d059999" height="300" />        |
+| deepseek | 询问 deepseek 最新的国际新闻，提取与中国有关的内容，并判断是否与关税相关 |    <video src="" height="300" />    |
+|  淘宝      |             我想要买一个300元左右的降噪耳机             | <video src="" height="300" />        |
 
 
 

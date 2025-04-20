@@ -49,6 +49,8 @@ export function KnowledgeCarousel({
         isCustom: false
     });
     const [isEditMode, setIsEditMode] = useState(false);
+    // 添加删除确认模态框状态
+    const [deleteModalVisible, setDeleteModalVisible] = useState(false);
 
     // 从配置文件加载系统内置的知识库
     const systemKnowledge: KnowledgeItem[] = systemKnowledgeData.systemKnowledge || [];
@@ -270,6 +272,39 @@ export function KnowledgeCarousel({
         });
         setIsEditMode(true);
     };
+    
+    // 显示删除确认模态框
+    const showDeleteConfirm = (e: React.MouseEvent) => {
+        e.stopPropagation(); // 阻止事件冒泡
+        setDeleteModalVisible(true);
+    };
+    
+    // 处理删除自定义知识
+    const handleDeleteKnowledge = () => {
+        // 过滤掉要删除的知识
+        const updatedCustomKnowledge = customKnowledge.filter(
+            item => item.name !== currentContent.name
+        );
+        
+        setCustomKnowledge(updatedCustomKnowledge);
+        
+        // 保存到localStorage
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedCustomKnowledge));
+        
+        // 如果当前删除的是已选中的知识，则取消选择
+        if (selectedKnowledgeLocal === currentContent.name) {
+            setSelectedKnowledgeLocal('');
+            if (onSelected) {
+                onSelected('');
+            }
+        }
+        
+        // 关闭模态框
+        setDeleteModalVisible(false);
+        setContentVisible(false);
+        
+        message.success('知识已删除');
+    };
 
     return (
         <div className="knowledge-carousel">
@@ -328,9 +363,11 @@ export function KnowledgeCarousel({
                     ) : (
                         <div className="empty-knowledge">
                             {activeTab === KnowledgeType.CUSTOM ? (
-                                <Button type="link" onClick={showAddModal} size="small">
-                                    添加自定义知识
-                                </Button>
+                                <div className="empty-knowledge-prompt" onClick={showAddModal}>
+                                    <div className="empty-knowledge-box">
+                                        <PlusOutlined className="empty-knowledge-icon" />
+                                    </div>
+                                </div>
                             ) : (
                                 <span>没有可用的知识库</span>
                             )}
@@ -401,13 +438,23 @@ export function KnowledgeCarousel({
                     <div className="content-modal-title">
                         <span>{currentContent.name}</span>
                         {currentContent.isCustom && !isEditMode && (
-                            <Button 
-                                type="text" 
-                                size="small" 
-                                icon={<EditOutlined />} 
-                                onClick={enterEditMode}
-                                className="edit-knowledge-btn"
-                            />
+                            <div className="content-modal-actions">
+                                <Button 
+                                    type="text" 
+                                    size="small" 
+                                    icon={<EditOutlined />} 
+                                    onClick={enterEditMode}
+                                    className="edit-knowledge-btn"
+                                />
+                                <Button
+                                    type="text"
+                                    size="small"
+                                    danger
+                                    icon={<CloseOutlined />}
+                                    onClick={showDeleteConfirm}
+                                    className="delete-knowledge-btn"
+                                />
+                            </div>
                         )}
                     </div>
                 }
@@ -457,6 +504,19 @@ export function KnowledgeCarousel({
                         {currentContent.content}
                     </div>
                 )}
+            </Modal>
+
+            {/* 删除确认模态框 */}
+            <Modal
+                title="确认删除"
+                open={deleteModalVisible}
+                onCancel={() => setDeleteModalVisible(false)}
+                onOk={handleDeleteKnowledge}
+                okText="删除"
+                cancelText="取消"
+                okButtonProps={{ danger: true }}
+            >
+                <p>确定要删除知识「{currentContent.name}」吗？此操作不可撤销。</p>
             </Modal>
         </div>
     );

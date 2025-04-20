@@ -79,4 +79,10 @@ This project is MIT licensed.
 
 ## Acknowledgments
 
-This project is based on [Midscene.js](https://github.com/web-infra-dev/midscene). Special thanks to the Midscene team for creating such an amazing tool that makes AI-driven browser automation accessible. 
+This project is based on [Midscene.js](https://github.com/web-infra-dev/midscene). Special thanks to the Midscene team for creating such an amazing tool that makes AI-driven browser automation accessible.
+
+---
+
+<div align="center">
+  如果本项目对你有帮助或启发，请给我们一个 ⭐️
+</div>

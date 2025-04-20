@@ -5,7 +5,7 @@
 <h1 align="center">Midscene Browser</h1>
 <div align="center">
 
-[English](./README.en) | 简体中文
+[English](./README.en.md) | 简体中文
 
 </div>
 
@@ -79,4 +79,10 @@ npm run dev
 
 ## 致谢
 
-本项目基于 [Midscene.js](https://github.com/web-infra-dev/midscene) 开发。特别感谢 Midscene 团队创造了这个令人惊叹的工具，让 AI 驱动的浏览器自动化变得触手可及。 
+本项目基于 [Midscene.js](https://github.com/web-infra-dev/midscene) 开发。特别感谢 Midscene 团队创造了这个令人惊叹的工具，让 AI 驱动的浏览器自动化变得触手可及。
+
+---
+
+<div align="center">
+  如果本项目对你有帮助或启发，请给我们一个 ⭐️
+</div>

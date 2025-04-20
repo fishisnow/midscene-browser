@@ -167,9 +167,7 @@
 
 /* 推荐工具卡片风格 */
 .knowledge-cards {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 4px;
+  display: flex;
   width: 100%;
   padding: 2px 0;
   box-sizing: border-box;
@@ -401,11 +399,52 @@ body, html {
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 10px;
+  padding: 0;
   color: @text-light;
   width: 100%;
   height: 70px;
   font-size: 12px;
+  box-sizing: border-box;
+}
+
+/* 空知识提示 - 调整为长方形并水平居中 */
+.empty-knowledge-prompt {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(0, 0, 0, 0.45);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  padding: 0;
+  border-radius: 6px;
+  border: 1px dashed #d9d9d9;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+/* 添加正方形容器用于容纳加号图标 */
+.empty-knowledge-box {
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  border: 1px dashed @primary-color;
+  margin: 0;
+}
+
+.empty-knowledge-prompt:hover {
+  color: @primary-color;
+  border-color: @primary-color;
+  background-color: rgba(6, 177, 171, 0.03);
+}
+
+.empty-knowledge-icon {
+  font-size: 24px;
+  color: @primary-color;
+  margin: 0;
 }
 
 /* 轮播导航按钮样式 - 更小更精致 */
@@ -504,24 +543,34 @@ body, html {
     white-space: nowrap;
   }
   
-  .edit-knowledge-btn {
+  .content-modal-actions {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    flex-shrink: 0;
+  }
+  
+  .edit-knowledge-btn, .delete-knowledge-btn {
     height: 20px;
     width: 20px;
     padding: 0;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-left: 8px;
     flex-shrink: 0;
     
     .anticon {
       font-size: 12px;
       color: @text-secondary;
     }
-    
-    &:hover .anticon {
-      color: @primary-color;
-    }
+  }
+  
+  .edit-knowledge-btn:hover .anticon {
+    color: @primary-color;
+  }
+  
+  .delete-knowledge-btn:hover .anticon {
+    color: @error-color;
   }
 }
 

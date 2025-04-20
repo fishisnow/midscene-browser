@@ -18,7 +18,7 @@ const Header = ({title, children}: { title: string, children?: React.ReactNode }
     return (
         <div className="header-nav">
             <div className="logo-container">
-                <img src="/icons/logo.png" alt="Logo" className="midscene-logo"/>
+                <img src="/icons/icon.png" alt="Logo" className="midscene-logo"/>
                 <span className="logo-text">{title}</span>
             </div>
             {children}
@@ -533,7 +533,7 @@ export function BrowserExtensionPlayground({
                     </div>
                 )}
 
-                <div className="conversation-area">
+                <div className="conversation-area" style={{justifyContent: "center"}}>
                     {tasksWithStatus.length > 0 && (
                         <div className="task-statistics">
                             <div className="stat-item">
@@ -564,7 +564,7 @@ export function BrowserExtensionPlayground({
                         ) : tasksWithStatus.length === 0 && !loading ? (
                             <div className="empty-state">
                                 {/* 没有任务时，显示知识卡片 */}
-                                <div className="empty-knowledge-container">
+                                <div className="empty-knowledge-container" style={{width: '300px', margin: '0 auto'}}>
                                     <KnowledgeCarousel
                                         onChange={handleAdvancedKnowledgeChange}
                                         onSelected={handleKnowledgeSelected}

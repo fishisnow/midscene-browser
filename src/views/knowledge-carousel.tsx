@@ -1,6 +1,6 @@
 import {useState, useEffect} from 'react';
-import {Button, Typography, Badge, Tooltip, Modal, Form, Input} from 'antd';
-import {LeftOutlined, RightOutlined, PlusOutlined, BookOutlined, UserOutlined} from '@ant-design/icons';
+import {Button, Typography, Badge, Modal, Form, Input, message} from 'antd';
+import {LeftOutlined, RightOutlined, PlusOutlined, BookOutlined, UserOutlined, EditOutlined, CloseOutlined} from '@ant-design/icons';
 import systemKnowledgeData from '../config/system-knowledge.json';
 
 const {Paragraph, Text} = Typography;
@@ -39,6 +39,16 @@ export function KnowledgeCarousel({
     const [selectedKnowledgeLocal, setSelectedKnowledgeLocal] = useState<string>('');
     const [activeTab, setActiveTab] = useState<KnowledgeType>(KnowledgeType.ALL);
     const [form] = Form.useForm();
+    const [editForm] = Form.useForm();
+
+    // 添加内容显示相关状态
+    const [contentVisible, setContentVisible] = useState(false);
+    const [currentContent, setCurrentContent] = useState<{name: string, content: string, isCustom?: boolean}>({
+        name: '', 
+        content: '',
+        isCustom: false
+    });
+    const [isEditMode, setIsEditMode] = useState(false);
 
     // 从配置文件加载系统内置的知识库
     const systemKnowledge: KnowledgeItem[] = systemKnowledgeData.systemKnowledge || [];
@@ -59,6 +69,20 @@ export function KnowledgeCarousel({
         if (externalSelectedKnowledge) {
             setSelectedKnowledgeLocal(externalSelectedKnowledge);
         }
+
+        // 添加全局事件监听器来处理知识内容显示
+        const handleShowContent = (event: any) => {
+            const { content, name, isCustom } = event.detail;
+            setCurrentContent({ name, content, isCustom });
+            setContentVisible(true);
+            setIsEditMode(false);
+        };
+
+        window.addEventListener('showKnowledgeContent', handleShowContent);
+
+        return () => {
+            window.removeEventListener('showKnowledgeContent', handleShowContent);
+        };
     }, []);
 
     // 同步外部selectedKnowledge变化
@@ -174,25 +198,78 @@ export function KnowledgeCarousel({
             <div className="knowledge-card-icon">
                 {item.isCustom ? <UserOutlined /> : <BookOutlined />}
             </div>
-            <Tooltip title={item.name} placement="top">
-                <div className="knowledge-card-title">{item.name}</div>
-            </Tooltip>
-            <Tooltip 
-                title={item.content} 
-                placement="top" 
-                color="#fff"
+            
+            {/* 直接显示标题 */}
+            <div className="knowledge-card-title">{item.name}</div>
+            
+            {/* 替换Tooltip为自定义内容显示功能 */}
+            <div 
+                className="knowledge-indicator"
+                onClick={(e) => {
+                    e.stopPropagation();
+                    // 触发全局事件，显示内容弹框
+                    const event = new CustomEvent('showKnowledgeContent', { 
+                        detail: {
+                            content: item.content,
+                            name: item.name,
+                            isCustom: item.isCustom
+                        }
+                    });
+                    window.dispatchEvent(event);
+                }}
             >
-                <div className="knowledge-indicator">
-                    <div className="knowledge-status-dot"></div>
-                    <span>查看</span>
-                </div>
-            </Tooltip>
+                <div className="knowledge-status-dot"></div>
+                <span>查看</span>
+            </div>
         </div>
     );
 
     // 判断是否需要显示导航按钮
     const showPrevButton = currentIndex > 0;
     const showNextButton = currentIndex < filteredKnowledge.length - 4;
+
+    // 处理编辑自定义知识
+    const handleEditCustom = (values: { name: string; content: string }) => {
+        // 首先找到要编辑的知识
+        const updatedCustomKnowledge = customKnowledge.map(item => {
+            if (item.name === currentContent.name) {
+                return {
+                    ...item,
+                    content: values.content // 只更新内容
+                };
+            }
+            return item;
+        });
+
+        setCustomKnowledge(updatedCustomKnowledge);
+        
+        // 保存到localStorage
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedCustomKnowledge));
+        
+        // 更新当前内容并关闭编辑模式
+        setCurrentContent({
+            ...currentContent,
+            content: values.content
+        });
+        setIsEditMode(false);
+        
+        // 如果这个知识被选中，也要更新
+        if (selectedKnowledgeLocal === currentContent.name && onChange) {
+            onChange({
+                [currentContent.name]: values.content
+            });
+        }
+        
+        message.success('知识内容已更新');
+    };
+    
+    // 进入编辑模式
+    const enterEditMode = () => {
+        editForm.setFieldsValue({
+            content: currentContent.content
+        });
+        setIsEditMode(true);
+    };
 
     return (
         <div className="knowledge-carousel">
@@ -316,6 +393,70 @@ export function KnowledgeCarousel({
                         />
                     </Form.Item>
                 </Form>
+            </Modal>
+
+            {/* 知识内容显示弹框 */}
+            <Modal
+                title={
+                    <div className="content-modal-title">
+                        <span>{currentContent.name}</span>
+                        {currentContent.isCustom && !isEditMode && (
+                            <Button 
+                                type="text" 
+                                size="small" 
+                                icon={<EditOutlined />} 
+                                onClick={enterEditMode}
+                                className="edit-knowledge-btn"
+                            />
+                        )}
+                    </div>
+                }
+                open={contentVisible}
+                onCancel={() => setContentVisible(false)}
+                footer={null}
+                destroyOnClose
+                className="knowledge-content-modal"
+                centered
+                width={340}
+                closeIcon={<CloseOutlined />}
+            >
+                {isEditMode ? (
+                    <Form
+                        form={editForm}
+                        layout="vertical"
+                        onFinish={handleEditCustom}
+                        className="edit-knowledge-form"
+                    >
+                        <Form.Item
+                            name="content"
+                            label="知识内容"
+                            rules={[{required: true, message: '请输入知识内容'}]}
+                        >
+                            <Input.TextArea
+                                rows={5}
+                                placeholder="请输入对该知识的详细描述"
+                                autoFocus
+                            />
+                        </Form.Item>
+                        <div className="edit-actions">
+                            <Button 
+                                onClick={() => setIsEditMode(false)}
+                            >
+                                取消
+                            </Button>
+                            <Button 
+                                type="primary" 
+                                htmlType="submit"
+                            >
+                                保存
+                            </Button>
+                        </div>
+                    </Form>
+                ) : (
+                    <div className="knowledge-content">
+                        {currentContent.content}
+                    </div>
+                )}
             </Modal>
         </div>
     );

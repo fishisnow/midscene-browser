@@ -9,11 +9,10 @@
 
 /* 空状态下的知识卡片容器 */
 .empty-knowledge-container {
-  width: 100%;
-  padding: 0 15px;
-  margin-bottom: 25px;
-  max-width: 360px;
-  align-self: center;
+  box-sizing: border-box;
+  margin: 0 auto;
+  width: 300px;
+  padding: 0;
 }
 
 /* 主容器样式 */
@@ -73,6 +72,10 @@
   overflow-y: auto;
   display: flex;
   flex-direction: column;
+  align-items: center;
+  overflow-x: hidden;
+  height: 100%;
+  justify-content: center;
 }
 
 /* 任务统计 */

@@ -6,14 +6,14 @@
   "version": "0.0.1",
   "action": {
     "default_icon": {
-      "128": "icons/logo.png"
+      "128": "icons/icon.png"
     }
   },
   "side_panel": {
     "default_path": "./index.html"
   },
   "icons": {
-    "128": "icons/logo.png"
+    "128": "icons/icon.png"
   },
   "permissions": [
     "tabs",

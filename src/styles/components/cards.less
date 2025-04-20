@@ -34,36 +34,46 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 100%;
-  padding: 20px;
+  height: auto;
+  padding: 10px 0;
   text-align: center;
+  width: 100%;
+  max-width: 340px;
+  margin: 0 auto;
+  overflow: hidden;
+  margin-top: auto;
+  margin-bottom: auto;
 }
 
 .empty-icon {
   font-size: 24px;
   color: #ccc;
-  margin-bottom: 12px;
+  margin: 10px 0;
 }
 
 .empty-text {
   color: #888;
   font-size: 14px;
+  margin: 0 0 10px;
 }
 
 /* 知识库卡片区域 - 浏览器插件风格 */
 .knowledge-carousel {
-  margin: 5px auto 12px;
+  margin: 5px auto 10px;
   background-color: #fff;
   border-radius: 8px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-  padding: 10px;
+  padding: 10px 5px;
   border: 1px solid @border-color;
   transition: @transition-fast;
   width: 100%;
-  max-width: 340px;
   box-sizing: border-box;
   position: relative;
   overflow: visible;
+  z-index: 1;
+  min-width: 290px;
+  max-width: 300px;
+  align-self: center;
 }
 
 .knowledge-carousel:hover {
@@ -75,6 +85,7 @@
   align-items: center;
   justify-content: space-between;
   margin-bottom: 8px;
+  width: 100%;
 }
 
 .knowledge-carousel-title {
@@ -90,7 +101,7 @@
   position: absolute;
   bottom: -3px;
   left: 0;
-  width: 15px;
+  width: 100%;
   height: 2px;
   background-color: @primary-color;
 }
@@ -117,6 +128,7 @@
   padding: 5px 0;
   overflow: visible;
   margin: 0 auto;
+  box-sizing: border-box;
 }
 
 /* 切换栏样式 */
@@ -157,9 +169,10 @@
 .knowledge-cards {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 8px;
+  gap: 4px;
   width: 100%;
   padding: 2px 0;
+  box-sizing: border-box;
 }
 
 .knowledge-cards::-webkit-scrollbar {
@@ -172,15 +185,19 @@
   border-radius: 6px;
   border: 1px solid @border-color;
   transition: all 0.25s ease;
-  padding: 6px 2px;
+  padding: 10px 2px 16px;
   cursor: pointer;
   background-color: #fff;
   position: relative;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
   text-align: center;
+  width: 100%;
+  box-sizing: border-box;
+  min-width: 0;
+  overflow: visible;
 }
 
 .knowledge-card:hover {
@@ -192,36 +209,38 @@
 .knowledge-card.selected {
   background-color: @selected-bg;
   border-color: @primary-color;
-  box-shadow: 0 1px 3px rgba(6, 177, 171, 0.2);
+  box-shadow: 0 2px 6px rgba(6, 177, 171, 0.2);
+}
+
+/* 知识卡片图标 - 右上角显示 */
+.knowledge-card-icon {
+  display: block;
+  position: absolute;
+  top: 3px;
+  right: 3px;
+  font-size: 9px;
+  opacity: 0.6;
+  z-index: 1;
 }
 
 .knowledge-card-title {
-  font-weight: 500;
+  font-weight: 600;
   font-size: 12px;
-  margin-top: 4px;
-  margin-bottom: 2px;
   color: @text-primary;
   text-align: center;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  width: 90%;
-  max-width: 60px;
-  padding: 0 2px;
+  width: 100%;
+  max-width: 100%;
+  padding: 0 8px;
   box-sizing: border-box;
-}
-
-.knowledge-card-icon {
-  font-size: 18px;
-  color: @primary-color;
-}
-
-.knowledge-card:hover .knowledge-card-icon {
-  transform: scale(1.1);
-}
-
-.knowledge-card.selected .knowledge-card-icon {
-  color: darken(@primary-color, 10%);
+  margin: 5px 0 7px;
+  line-height: 1.2;
+  height: 29px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 /* 知识库类型标识 */
@@ -233,28 +252,49 @@
   color: @info-color;
 }
 
+.knowledge-card:hover .knowledge-card-icon {
+  opacity: 1;
+}
+
 /* 知识库指示器 */
 .knowledge-indicator {
   font-size: 10px;
   color: @text-secondary;
-  margin-top: 2px;
   display: flex;
   align-items: center;
   justify-content: center;
+  position: absolute;
+  bottom: 6px;
+  width: 100%;
+  cursor: pointer;
+  z-index: 5;
+  padding: 2px 0;
+  transition: all 0.2s ease;
+}
+
+.knowledge-indicator:hover {
+  color: @primary-color;
+  background-color: rgba(240, 240, 240, 0.5);
+}
+
+.knowledge-card:hover .knowledge-indicator {
+  color: @primary-color;
 }
 
 .knowledge-status-dot {
   width: 4px;
   height: 4px;
   border-radius: 50%;
-  background-color: @text-light;
+  background-color: @primary-color;
   display: inline-block;
   margin-right: 3px;
+  opacity: 0.7;
 }
 
 .knowledge-card.selected .knowledge-status-dot {
   background-color: @primary-color;
   animation: pulseDot 1.5s infinite ease-in-out;
+  opacity: 1;
 }
 
 @keyframes pulseDot {
@@ -285,49 +325,69 @@
   transform: scale(1.05);
 }
 
-/* 轮播导航按钮样式 */
-.carousel-nav-button {
-  position: absolute;
-  width: 24px;
-  height: 24px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: white;
-  border-radius: 50%;
-  border: 1px solid @border-color;
-  z-index: 10;
-  cursor: pointer;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
-  opacity: 0.9;
-  top: 50%;
-  transform: translateY(-50%);
-}
-
-.carousel-nav-button.prev-button {
-  left: -8px;
-}
-
-.carousel-nav-button.next-button {
-  right: -8px;
-}
-
-.carousel-nav-button:hover {
-  background-color: #fff;
-  color: @primary-color;
-  border-color: @primary-color;
-  opacity: 1;
-}
-
-/* 工具提示样式 */
+/* 自定义工具提示，确保内容正确显示 */
 .ant-tooltip {
   max-width: 300px;
+  z-index: 1500;
+  margin-right: 20px !important; /* 防止工具提示超出右边界 */
+  /* 修改工具提示位置为页面中心 */
+  position: fixed !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
 }
 
+.ant-tooltip-arrow {
+  display: none !important; /* 隐藏箭头 */
+}
+
+.ant-tooltip-content {
+  text-align: left;
+  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.15));
+}
+
+/* 确保提示内容可以很高但不会影响页面布局 */
 .ant-tooltip-inner {
-  padding: 6px 10px;
-  font-size: 12px;
-  line-height: 1.4;
+  padding: 14px 16px !important;
+  font-size: 13px !important;
+  line-height: 1.6 !important;
+  color: rgba(0, 0, 0, 0.85) !important;
+  text-align: left !important;
+  background-color: #fff !important;
+  border-radius: 10px !important; /* 确保所有边都是圆角 */
+  box-shadow: 0 3px 16px rgba(0, 0, 0, 0.12) !important;
+  white-space: pre-wrap !important;
+  word-break: break-word !important;
+  max-width: 320px !important;
+  width: auto !important;
+  max-height: 540px !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  border: 1px solid rgba(0, 0, 0, 0.06) !important;
+}
+
+/* 添加工具提示滚动条样式 */
+.ant-tooltip-inner::-webkit-scrollbar {
+  width: 4px;
+}
+
+.ant-tooltip-inner::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 2px;
+}
+
+.ant-tooltip-inner::-webkit-scrollbar-thumb {
+  background: #C0C0C0;
+  border-radius: 2px;
+}
+
+.ant-tooltip-inner::-webkit-scrollbar-thumb:hover {
+  background: #A0A0A0;
+}
+
+/* 防止页面水平滚动 */
+body, html {
+  overflow-x: hidden !important;
 }
 
 /* 标题工具提示特殊样式 */
@@ -346,4 +406,245 @@
   width: 100%;
   height: 70px;
   font-size: 12px;
+}
+
+/* 轮播导航按钮样式 - 更小更精致 */
+.carousel-nav-button {
+  position: absolute;
+  width: 12px !important;
+  height: 12px !important;
+  min-width: 12px !important;
+  min-height: 12px !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: white;
+  border-radius: 50%;
+  border: 1px solid #e0e0e0;
+  z-index: 20;
+  cursor: pointer;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  opacity: 0.75;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 6px;
+  color: #999;
+  padding: 0 !important;
+  margin: 0;
+  line-height: 1;
+}
+
+.carousel-nav-button.prev-button {
+  left: -6px;
+}
+
+.carousel-nav-button.next-button {
+  right: -6px;
+}
+
+.carousel-nav-button.ant-btn {
+  padding: 0 !important;
+}
+
+.carousel-nav-button .anticon {
+  font-size: 6px;
+  line-height: 1;
+}
+
+.carousel-nav-button:hover {
+  background-color: #fff;
+  color: @primary-color;
+  border-color: @primary-color;
+  opacity: 1;
+  box-shadow: 0 1px 2px rgba(6, 177, 171, 0.2);
+}
+
+/* 防止工具提示闪烁 */
+.ant-tooltip-hidden {
+  display: none;
+}
+
+/* 知识内容弹框特殊样式 */
+.knowledge-content-modal {
+  .ant-modal-content {
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    padding: 0;
+  }
+
+  .ant-modal-header {
+    background-color: #fdfdfd;
+    border-bottom: 1px solid #f0f0f0;
+    margin: 0;
+  }
+
+  .ant-modal-body {
+    padding: 10px 12px;
+    max-height: 380px;
+    overflow-y: auto;
+    margin: 0;
+  }
+}
+
+.content-modal-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  height: 22px;
+  
+  span {
+    font-size: 14px;
+    font-weight: 600;
+    color: @text-primary;
+    flex: 1;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+  
+  .edit-knowledge-btn {
+    height: 20px;
+    width: 20px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 8px;
+    flex-shrink: 0;
+    
+    .anticon {
+      font-size: 12px;
+      color: @text-secondary;
+    }
+    
+    &:hover .anticon {
+      color: @primary-color;
+    }
+  }
+}
+
+.knowledge-content {
+  font-size: 13px;
+  line-height: 1.5;
+  color: @text-primary;
+  white-space: pre-wrap;
+  word-break: break-word;
+  margin: 0;
+}
+
+.edit-knowledge-form {
+  .ant-form-item {
+    margin-bottom: 12px;
+  }
+  
+  .ant-form-item-label {
+    padding-bottom: 2px;
+    
+    label {
+      font-size: 13px;
+      height: 20px;
+    }
+  }
+  
+  textarea.ant-input {
+    padding: 6px 8px;
+    font-size: 13px;
+    resize: none;
+  }
+}
+
+.edit-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+/* 为整个Modal添加更紧凑的样式 */
+.ant-modal {
+  padding-bottom: 0;
+}
+
+.ant-modal-wrap {
+  padding: 0;
+}
+
+/* 修复知识库组件水平居中 */
+.empty-knowledge-container {
+  width: 100%;
+  padding: 0;
+  margin: 0 auto;
+  max-width: 300px;
+  align-self: center;
+  box-sizing: border-box;
+}
+
+/* 确保header空间足够放置标题和关闭按钮 */
+.ant-modal-title {
+  line-height: 22px !important;
+  display: flex !important;
+  align-items: center !important;
+  margin: 0 !important;
+}
+
+/* 重置并美化Modal关闭按钮样式 */
+.ant-modal {
+  .ant-modal-close {
+    position: absolute !important;
+    right: 14px !important;
+    top: 12px !important;
+    height: 24px !important;
+    width: 24px !important;
+    transform: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    border-radius: 50% !important;
+    background-color: transparent !important;
+    transition: all 0.2s ease-in-out !important;
+    z-index: 10 !important;
+    
+    &:hover {
+      background-color: rgba(0, 0, 0, 0.05) !important;
+      transform: rotate(90deg) !important;
+    }
+  }
+
+  .ant-modal-close-x {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    height: 100% !important;
+    width: 100% !important;
+    line-height: 1 !important;
+    font-size: 14px !important;
+    color: rgba(0, 0, 0, 0.55) !important;
+    
+    .anticon {
+      font-size: 14px !important;
+      font-weight: normal !important;
+    }
+  }
+
+  .ant-modal-header {
+    position: relative !important;
+    padding: 16px 16px !important;
+    display: flex !important;
+    align-items: center !important;
+    min-height: 48px !important;
+    height: auto !important;
+    box-sizing: border-box !important;
+  }
+
+  .ant-modal-title {
+    line-height: 22px !important;
+    display: flex !important;
+    align-items: center !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    font-size: 16px !important;
+    font-weight: 500 !important;
+    color: rgba(0, 0, 0, 0.85) !important;
+  }
 } 

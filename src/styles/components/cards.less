@@ -63,17 +63,18 @@
   background-color: #fff;
   border-radius: 8px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-  padding: 10px 5px;
+  padding: 10px;
   border: 1px solid @border-color;
   transition: @transition-fast;
-  width: 100%;
+  width: 340px; /* 精确匹配输入框宽度 */
   box-sizing: border-box;
   position: relative;
   overflow: visible;
   z-index: 1;
-  min-width: 290px;
-  max-width: 300px;
-  align-self: center;
+  left: 0;
+  right: 0;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .knowledge-carousel:hover {
@@ -171,6 +172,7 @@
   width: 100%;
   padding: 2px 0;
   box-sizing: border-box;
+  justify-content: center;
 }
 
 .knowledge-cards::-webkit-scrollbar {
@@ -625,7 +627,7 @@ body, html {
   width: 100%;
   padding: 0;
   margin: 0 auto;
-  max-width: 300px;
+  max-width: 340px;
   align-self: center;
   box-sizing: border-box;
 }

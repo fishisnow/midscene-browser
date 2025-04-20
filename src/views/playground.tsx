@@ -614,7 +614,7 @@ export function BrowserExtensionPlayground({
                         ) : tasksWithStatus.length === 0 && !loading ? (
                             <div className="empty-state">
                                 {/* 没有任务时，显示知识卡片 */}
-                                <div className="empty-knowledge-container" style={{width: '300px', margin: '0 auto'}}>
+                                <div className="empty-knowledge-container">
                                     <KnowledgeCarousel
                                         onChange={handleAdvancedKnowledgeChange}
                                         onSelected={handleKnowledgeSelected}
@@ -671,6 +671,7 @@ export function BrowserExtensionPlayground({
                                             placeholder="输入您的问题..."
                                             autoSize={{minRows: 1, maxRows: 4}}
                                             disabled={loading}
+                                            style={{width: '100%', boxSizing: 'border-box'}}
                                         />
                                         <ExecuteButton
                                             onClick={handleExecuteClick}

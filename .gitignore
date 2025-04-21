@@ -2,5 +2,4 @@
 test
 node_modules
 dist
-package-lock.json
 extension_output

@@ -1,5 +1,5 @@
 import { Card, List, Tooltip, Progress, Alert, Button } from 'antd';
-import { CheckCircleOutlined, InfoCircleOutlined, LoadingOutlined, ThunderboltOutlined, CloseCircleOutlined, ClockCircleOutlined } from '@ant-design/icons';
+import { CheckCircleOutlined, LoadingOutlined, ThunderboltOutlined, CloseCircleOutlined, ClockCircleOutlined } from '@ant-design/icons';
 import { ActivityItem } from '../agent/composite-agent.ts';
 import { RetryButton } from './popup/components/retry-button.tsx';
 
@@ -41,12 +41,11 @@ export const TaskList: React.FC<TaskListProps> = ({
   const currentTask = tasks[currentTaskIndex] || tasks.find(t => t.status === TaskStatus.RUNNING);
   const pendingTasks = tasks.filter(t => !t.isCompleted && t.status === TaskStatus.PENDING);
   const failedTasks = tasks.filter(t => t.status === TaskStatus.FAILED);
-  const showPlanningPhase = loading && tasks.length === 0;
   const hasError = error || failedTasks.length > 0;
 
   return (
     <Card 
-      className={`task-list-card ${showPlanningPhase ? 'task-planning-phase' : ''}`}
+      className={`task-list-card`}
       title={
         <div className="task-list-header">
           <div className="task-header-title">
@@ -91,23 +90,6 @@ export const TaskList: React.FC<TaskListProps> = ({
           style={{ marginBottom: 16 }}
           action={onRetry ? <RetryButton onClick={onRetry} /> : null}
         />
-      )}
-
-      {showPlanningPhase && (
-        <>
-          <div className="planning-info">
-            <InfoCircleOutlined style={{ marginRight: 8 }} />
-            AI 正在规划具体的执行步骤...
-          </div>
-          <div className="task-planning-animation">
-            <div className="task-planning-dot"></div>
-            <div className="task-planning-dot"></div>
-            <div className="task-planning-dot"></div>
-          </div>
-          <div className="task-planning-text planning">
-            正在分析任务并生成执行计划，请稍候...
-          </div>
-        </>
       )}
 
       {tasks.length > 0 && (

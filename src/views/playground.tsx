@@ -5,7 +5,7 @@ import {
     useEnvConfig,
 } from '@midscene/visualizer';
 import {Form, message, Button, Modal, Input} from 'antd';
-import {SettingOutlined, GithubOutlined, BookOutlined, WarningOutlined} from '@ant-design/icons';
+import {SettingOutlined, GithubOutlined, BookOutlined, WarningOutlined, InfoCircleOutlined, ThunderboltOutlined} from '@ant-design/icons';
 import {useCallback, useEffect, useRef, useState} from 'react';
 import {CompositeAgent, TaskPlan} from '../agent/composite-agent.ts';
 import {TaskList, TaskWithStatus, TaskStatus} from './task-list.tsx';
@@ -574,13 +574,20 @@ export function BrowserExtensionPlayground({
                 <div className="conversation-area" style={{justifyContent: "center"}}>
                     <div className="tasks-container">
                         {loading && executionPhase === ExecutionPhase.PLANNING && tasksWithStatus.length === 0 ? (
-                            <div className="task-list-placeholder">
-                                <div className="loading-dots">
-                                    <div className="dot"></div>
-                                    <div className="dot"></div>
-                                    <div className="dot"></div>
+                            <div className="task-list-placeholder planning-stage">
+                                <div className="planning-stage-icon">
+                                    <ThunderboltOutlined style={{ fontSize: '24px', color: '#1890ff' }} />
                                 </div>
-                                <div>正在思考中...</div>
+                                <div className="planning-stage-title">AI 正在规划具体的执行步骤...</div>
+                                <div className="planning-stage-description">
+                                    <InfoCircleOutlined style={{ marginRight: 8 }} />
+                                    正在分析任务并生成执行计划，请稍候...
+                                </div>
+                                <div className="task-planning-animation">
+                                    <div className="task-planning-dot"></div>
+                                    <div className="task-planning-dot"></div>
+                                    <div className="task-planning-dot"></div>
+                                </div>
                             </div>
                         ) : executionPhase === ExecutionPhase.ERROR && !loading && tasksWithStatus.length === 0 ? (
                             // 规划阶段错误显示

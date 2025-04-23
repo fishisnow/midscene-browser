@@ -490,14 +490,59 @@
   }
 }
 
-/* 任务规划动画效果 */
+/* 规划阶段样式优化 */
+.planning-stage {
+  padding: 40px 20px;
+  background-color: #fafafa;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.planning-stage-icon {
+  background-color: rgba(24, 144, 255, 0.1);
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+
+.planning-stage-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1890ff;
+  margin-bottom: 12px;
+}
+
+.planning-stage-description {
+  background-color: rgba(24, 144, 255, 0.05);
+  padding: 10px 16px;
+  border-radius: 8px;
+  margin: 16px 0;
+  color: rgba(0, 0, 0, 0.65);
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+}
+
+.task-planning-animation {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+}
+
+/* 改进任务规划动画点样式 */
 .task-planning-dot {
   display: inline-block;
-  width: 8px;
-  height: 8px;
-  margin: 0 4px;
+  width: 10px;
+  height: 10px;
+  margin: 0 5px;
   border-radius: 50%;
-  background-color: @primary-color;
+  background-color: #1890ff;
   animation: task-planning-pulse 1.5s infinite ease-in-out;
 }
 

@@ -128,6 +128,9 @@
   display: flex;
   flex-direction: column;
   padding: 0;
+  margin-top: 0;
+  position: relative;
+  height: 100%;
 }
 
 /* 任务列表容器 */
@@ -141,6 +144,27 @@
   width: 100%;
   max-width: 340px;
   margin: 0 auto;
+  padding-bottom: 120px; /* 增加底部内边距，确保内容不被底部按钮遮挡 */
+  height: auto; /* 移除固定高度，允许容器跟随内容自适应 */
+  max-height: 100%; /* 确保不超过父容器高度 */
+  position: relative; /* 添加相对定位 */
+  top: 0; /* 确保从顶部开始显示 */
+}
+
+/* 任务列表项容器 - 修复溢出问题 */
+.task-list-card {
+  height: auto;
+  max-height: none;
+  overflow: visible;
+}
+
+.task-list-card .ant-card-body {
+  overflow-y: visible;
+  max-height: none;
+}
+
+.tasks-container .ant-list {
+  overflow: visible;
 }
 
 /* 知识库容器样式 */
@@ -169,6 +193,8 @@
   flex-direction: column;
   align-items: center;
   max-width: 340px; /* 与任务列表和知识库组件保持一致 */
+  position: relative;
+  z-index: 10; /* 确保底部输入区在滚动内容之上 */
 }
 
 /* 输入框包装器 */

@@ -18,16 +18,14 @@ export const RetryButton: React.FC<RetryButtonProps> = ({
   className = 'retry-button'
 }) => {
   return (
-    <div className="retry-button-container">
-      <Button 
-        className={className}
-        onClick={onClick} 
-        icon={<RedoOutlined className="retry-icon" />}
-        loading={loading}
-        disabled={disabled}
-      >
-        {text}
-      </Button>
-    </div>
+    <Button 
+      className={className}
+      onClick={onClick} 
+      icon={<RedoOutlined className="retry-icon" />}
+      loading={loading}
+      disabled={disabled}
+    >
+      {text}
+    </Button>
   );
 };

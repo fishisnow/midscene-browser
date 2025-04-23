@@ -5,7 +5,7 @@ import {
     useEnvConfig,
 } from '@midscene/visualizer';
 import {Form, message, Button, Modal, Input} from 'antd';
-import {SettingOutlined, GithubOutlined, BookOutlined, WarningOutlined, InfoCircleOutlined, ThunderboltOutlined} from '@ant-design/icons';
+import {SettingOutlined, GithubOutlined, BookOutlined, WarningOutlined, InfoCircleOutlined, ThunderboltOutlined, ArrowLeftOutlined} from '@ant-design/icons';
 import {useCallback, useEffect, useRef, useState} from 'react';
 import {CompositeAgent, TaskPlan} from '../agent/composite-agent.ts';
 import {TaskList, TaskWithStatus, TaskStatus} from './task-list.tsx';
@@ -102,6 +102,8 @@ export function BrowserExtensionPlayground({
     // 输入内容
     const [inputValue, setInputValue] = useState('');
     const [editingConfig, setEditingConfig] = useState(false);
+    // 添加上一次任务指令记录
+    const [lastPrompt, setLastPrompt] = useState('');
 
     // Form and environment configuration
     const [form] = Form.useForm();
@@ -117,7 +119,7 @@ export function BrowserExtensionPlayground({
     // 记录上次环境配置的状态
     const lastConfigRef = useRef(config);
 
-    const compositeAgentRef = useRef<CompositeAgent | null>(null);
+    const curAgentRef = useRef<any>(null);
     const currentRunningIdRef = useRef<number | null>(0);
     const interruptedFlagRef = useRef<Record<number, boolean>>({});
 
@@ -236,11 +238,26 @@ export function BrowserExtensionPlayground({
 
     // 处理重新运行
     const handleRerunClick = () => {
+        // 如果有上一次的指令，填入输入框
+        if (lastPrompt) {
+            setInputValue(lastPrompt);
+            form.setFieldsValue({ prompt: lastPrompt });
+        }
+        
         // 如果是规划阶段失败，先重置状态
         if (executionPhase === ExecutionPhase.ERROR && tasksWithStatus.length === 0) {
             resetPlanningState();
         }
-        handleRun();
+        
+        // 如果有上一次指令，则直接运行；否则走原逻辑
+        if (lastPrompt) {
+            // 延迟一点执行，确保输入框数据已更新
+            setTimeout(() => {
+                handleRun();
+            }, 50);
+        } else {
+            handleRun();
+        }
     };
 
     // 处理添加知识提交
@@ -267,16 +284,24 @@ export function BrowserExtensionPlayground({
             return;
         }
 
+        // 记录当前的任务指令，以便重新运行时使用
+        setLastPrompt(value.prompt);
+
         const startTime = Date.now();
 
         setLoading(true);
         setExecutionPhase(ExecutionPhase.PLANNING);
         setResult(null);
         setCurrentActivityIndex(-1);
+        
+        // 计算当前是否显示重试按钮，决定是否需要清空任务列表
+        const isShowingRetryButton = (executionPhase === ExecutionPhase.COMPLETED || executionPhase === ExecutionPhase.ERROR || tasksWithStatus.some(t => t.status === TaskStatus.FAILED)) && !loading;
+        
         // 不清空任务列表，当重新运行时需要重置
-        if (!showRetryButton) {
+        if (!isShowingRetryButton) {
             setTasksWithStatus([]);
         }
+        
         const result: PlaygroundResult = {...blankResult};
 
         const thisRunningId = Date.now();
@@ -284,10 +309,7 @@ export function BrowserExtensionPlayground({
             currentRunningIdRef.current = thisRunningId;
             interruptedFlagRef.current[thisRunningId] = false;
 
-            const compositeAgent = new CompositeAgent(
-                getAgent(forceSameTabNavigation)?.page,
-                getAgent
-            );
+            const compositeAgent = new CompositeAgent();
 
             // 设置进度提示回调
             compositeAgent.onProgressUpdate = (_text: string) => {
@@ -328,14 +350,12 @@ export function BrowserExtensionPlayground({
                 handlePlanComplete(plan);
             };
 
-            compositeAgentRef.current = compositeAgent;
-
             // 分两步执行：先规划，后执行
             try {
-                // 1. 规划任务
                 try {
-                    const {plan, activeAgent} = await compositeAgent.planTask(value.prompt, advancedKnowledge);
-
+                    const activeAgent = getAgent();
+                    curAgentRef.current = activeAgent
+                    const plan = await compositeAgent.planTask(value.prompt, activeAgent, advancedKnowledge);
                     if (interruptedFlagRef.current[thisRunningId]) {
                         console.log('任务规划后被中断');
                         return;
@@ -400,38 +420,34 @@ export function BrowserExtensionPlayground({
         }
 
         try {
-            // 尝试获取转储数据
-            const activeAgent = getAgent(forceSameTabNavigation);
-            if (activeAgent?.dumpDataString) {
-                result.dump = activeAgent.dumpDataString()
-                    ? JSON.parse(activeAgent.dumpDataString())
-                    : null;
-            }
-            console.log(result);
-        } catch (e) {
-            console.error(e);
-        }
-
-        try {
             // 销毁页面
-            await compositeAgentRef.current?.destroy();
+            console.log("agent: ", curAgentRef.current);
+            await curAgentRef.current?.page?.destroy();
             console.log('页面已销毁');
         } catch (e) {
-            console.error(e);
+            console.error('销毁页面时出错:', e);
         }
 
-        compositeAgentRef.current = null;
+        curAgentRef.current = null;
         setResult(result);
         setLoading(false);
 
+        // 修改此处，不再清空输入框内容，以便重新运行时可以看到上次的指令
         // 如果没有开始执行任务，就清空表单和输入框内容
         if (executionPhase !== ExecutionPhase.EXECUTING && executionPhase !== ExecutionPhase.COMPLETED) {
-            form.resetFields();
-            setInputValue('');
+            // 只有在规划阶段失败时才清空，保留上次成功的指令
+            if (executionPhase === ExecutionPhase.PLANNING && result.error) {
+                // 在规划失败的情况下，不清空输入框，依然保留用户的输入
+                // 注意：这里不调用form.resetFields()和setInputValue('')
+            } else {
+                // 其他情况下仍然执行原来的清空逻辑
+                form.resetFields();
+                setInputValue('');
+            }
         }
 
         console.log(`执行时间: ${Date.now() - startTime}毫秒`);
-    }, [form, getAgent, forceSameTabNavigation, advancedKnowledge]);
+    }, [form, getAgent, forceSameTabNavigation, advancedKnowledge, executionPhase, tasksWithStatus, loading]);
 
     // 添加重置规划状态的函数
     const resetPlanningState = () => {
@@ -439,10 +455,17 @@ export function BrowserExtensionPlayground({
         setTasksWithStatus([]);
         setResult(null);
         setCurrentActivityIndex(-1);
+        // 不要在此清空lastPrompt，保留上次的指令
     };
 
     // 处理重试操作
     const handleRetry = useCallback(() => {
+        // 恢复上次的指令
+        if (lastPrompt) {
+            setInputValue(lastPrompt);
+            form.setFieldsValue({ prompt: lastPrompt });
+        }
+        
         // 重新执行任务但保留错误状态
         if (result?.error) {
             if (tasksWithStatus.length > 0) {
@@ -458,9 +481,12 @@ export function BrowserExtensionPlayground({
             }
         }
 
-        // 重新执行任务
-        handleRun();
-    }, [handleRun, result, tasksWithStatus.length]);
+        // 延迟一点执行，确保输入框数据已更新
+        setTimeout(() => {
+            // 重新执行任务
+            handleRun();
+        }, 50);
+    }, [handleRun, result, tasksWithStatus.length, lastPrompt, form]);
 
     // 更新知识库配置
     const handleAdvancedKnowledgeChange = (value: Record<string, string>) => {
@@ -530,7 +556,7 @@ export function BrowserExtensionPlayground({
     tasksWithStatus.length
         ? Math.round((completedTasks.length / tasksWithStatus.length) * 100)
         : 0;
-    const showRetryButton = (executionPhase === ExecutionPhase.COMPLETED || executionPhase === ExecutionPhase.ERROR) && !loading;
+    const showRetryButton = (executionPhase === ExecutionPhase.COMPLETED || executionPhase === ExecutionPhase.ERROR || hasErrors) && !loading;
 
     // 当所有任务完成时，更新执行阶段
     useEffect(() => {
@@ -571,17 +597,20 @@ export function BrowserExtensionPlayground({
                     </div>
                 )}
 
-                <div className="conversation-area" style={{justifyContent: "center"}}>
+                <div className="conversation-area">
                     <div className="tasks-container">
                         {loading && executionPhase === ExecutionPhase.PLANNING && tasksWithStatus.length === 0 ? (
                             <div className="task-list-placeholder planning-stage">
                                 <div className="planning-stage-icon">
-                                    <ThunderboltOutlined style={{ fontSize: '24px', color: '#1890ff' }} />
+                                    <ThunderboltOutlined style={{ fontSize: '20px', color: '#1890ff' }} />
                                 </div>
                                 <div className="planning-stage-title">AI 正在规划具体的执行步骤...</div>
                                 <div className="planning-stage-description">
-                                    <InfoCircleOutlined style={{ marginRight: 8 }} />
-                                    正在分析任务并生成执行计划，请稍候...
+                                    <span className="icon-wrapper"><InfoCircleOutlined /></span>
+                                    <div className="description-content">
+                                        <div className="description-text">正在分析任务并生成执行计划</div>
+                                        <div className="description-text">请稍候...</div>
+                                    </div>
                                 </div>
                                 <div className="task-planning-animation">
                                     <div className="task-planning-dot"></div>
@@ -599,8 +628,8 @@ export function BrowserExtensionPlayground({
                                 </div>
                                 <div className="error-title">任务规划失败</div>
                                 <div className="error-message">{result?.error || '未知错误'}</div>
-                                {isAPIRelatedError(result?.error) && (
-                                    <div className="error-actions" style={{ marginTop: '16px' }}>
+                                <div className="error-actions">
+                                    {isAPIRelatedError(result?.error) && (
                                         <Button 
                                             type="primary" 
                                             onClick={handleOpenSettings}
@@ -609,14 +638,20 @@ export function BrowserExtensionPlayground({
                                         >
                                             调整API设置
                                         </Button>
-                                        <Button 
-                                            onClick={handleRerunClick}
-                                            style={{ marginLeft: '8px' }}
-                                        >
-                                            重试
-                                        </Button>
-                                    </div>
-                                )}
+                                    )}
+                                    <Button 
+                                        onClick={handleRerunClick}
+                                        style={{ margin: '0 8px' }}
+                                    >
+                                        重试
+                                    </Button>
+                                    <Button 
+                                        onClick={resetPlanningState}
+                                        icon={<ArrowLeftOutlined />}
+                                    >
+                                        返回
+                                    </Button>
+                                </div>
                             </div>
                         ) : tasksWithStatus.length === 0 && !loading ? (
                             <div className="empty-state">
@@ -649,11 +684,40 @@ export function BrowserExtensionPlayground({
 
                 <div className="footer-input-area">
                     {showRetryButton && !loading && (
-                        <div className="retry-button-container">
-                            <RetryButton
-                                onClick={handleRerunClick}
-                                text="重新运行"
-                            />
+                        <div className="footer-actions-container">
+                            <div className="retry-button-wrapper">
+                                <RetryButton
+                                    onClick={handleRerunClick}
+                                    text="重新运行"
+                                    className="action-button"
+                                />
+                            </div>
+                            
+                            <div className="return-button-wrapper">
+                                <Button 
+                                    type="primary" 
+                                    onClick={resetPlanningState}
+                                    icon={<ArrowLeftOutlined />}
+                                    className="action-button"
+                                >
+                                    返回主页
+                                </Button>
+                            </div>
+                        </div>
+                    )}
+
+                    {!showRetryButton && !loading && (executionPhase === ExecutionPhase.COMPLETED || executionPhase === ExecutionPhase.ERROR) && (
+                        <div className="footer-actions-container">
+                            <div className="return-button-wrapper">
+                                <Button 
+                                    type="primary" 
+                                    onClick={resetPlanningState}
+                                    icon={<ArrowLeftOutlined />}
+                                    className="action-button"
+                                >
+                                    返回主页
+                                </Button>
+                            </div>
                         </div>
                     )}
 

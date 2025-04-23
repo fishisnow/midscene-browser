@@ -1,6 +1,5 @@
 import {callToGetJSONObject} from '@midscene/core/ai-model';
 import {systemPrompt, automationUserPrompt} from "./composite-prompts.ts";
-import type {WebPage} from '@midscene/web';
 import {descriptionOfTree} from '@midscene/shared/extractor';
 import {imageInfoOfBase64} from '@midscene/shared/img';
 
@@ -28,20 +27,13 @@ export function describeSize(size: { width: number; height: number }) {
     return `${size.width} x ${size.height}`;
 }
 
-export class CompositeAgent<PageType extends WebPage = WebPage> {
-    page: PageType;
+export class CompositeAgent {
     aiVendorFn: (...args: Array<any>) => Promise<any> = callToGetJSONObject;
-    getAgent: (forceSameTabNavigation?: boolean) => any | null;
     onProgressUpdate?: (text: string) => void;
     onActivityStart?: (index: number) => void;
     onActivityComplete?: (index: number, executionTime: number) => void;
     onActivityFail?: (index: number, error: string) => void;
     onPlanComplete?: (plan: TaskPlan) => void;
-
-    constructor(page: PageType, getAgent: (forceSameTabNavigation?: boolean) => any | null) {
-        this.page = page;
-        this.getAgent = getAgent;
-    }
 
     /**
      * 执行单个活动
@@ -114,19 +106,16 @@ export class CompositeAgent<PageType extends WebPage = WebPage> {
     /**
      * 规划任务执行步骤
      * @param taskPrompt 用户任务描述
+     * @param activeAgent
      * @param knowledgeBase 高级知识库配置
      * @returns 任务计划
      */
-    async planTask(taskPrompt: string, knowledgeBase?: Record<string, string>): Promise<{
-        plan: TaskPlan;
-        activeAgent: any
-    }> {
+    async planTask(taskPrompt: string, activeAgent: any, knowledgeBase?: Record<string, string>): Promise<TaskPlan> {
         if (this.onProgressUpdate) {
             this.onProgressUpdate('正在分析任务并规划执行步骤...');
         }
 
         try {
-            const activeAgent = this.getAgent(); // 优先使用传入的 actionAgent
             const context = await activeAgent?.getUIContext();
             const contentTree = descriptionOfTree(context.tree);
             const {screenshotBase64} = context;
@@ -223,7 +212,7 @@ export class CompositeAgent<PageType extends WebPage = WebPage> {
                     this.onPlanComplete(taskPlan);
                 }
 
-                return {plan: taskPlan, activeAgent};
+                return taskPlan
             } catch (parseError: any) {
                 console.error('解析AI返回的活动列表失败', parseError);
                 // 如果是解析错误，提供更详细的错误信息
@@ -319,9 +308,5 @@ export class CompositeAgent<PageType extends WebPage = WebPage> {
                 error: error instanceof Error ? error.message : String(error)
             };
         }
-    }
-
-    async destroy() {
-        await this.page.destroy();
     }
 }

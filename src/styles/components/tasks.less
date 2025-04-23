@@ -19,9 +19,12 @@
   justify-content: center;
   min-height: 150px;
   transition: all 0.3s ease;
-  border: 1px dashed @border-color;
+  border: 1px solid @border-color;
   border-radius: @border-radius-base;
-  margin: 10px;
+  margin: 0 auto;
+  max-width: 400px;
+  width: 90%;
+  box-sizing: border-box;
 }
 
 .placeholder-icon {
@@ -291,19 +294,6 @@
   font-weight: 500;
 }
 
-.task-error {
-  margin-left: 28px;
-  padding: 8px 12px;
-  border-radius: @border-radius-base;
-  background-color: rgba(249, 72, 62, 0.05);
-  border: 1px solid rgba(249, 72, 62, 0.1);
-  color: @error-color;
-  font-size: 13px;
-  line-height: 1.5;
-  margin-top: 8px;
-  margin-bottom: 8px;
-}
-
 /* 任务状态摘要 */
 .task-status-summary {
   display: flex;
@@ -442,15 +432,6 @@
   background-color: @error-color;
 }
 
-.error-message {
-  color: @error-color;
-  font-size: 13px;
-  background-color: rgba(249, 72, 62, 0.05);
-  padding: 8px 12px;
-  border-radius: @border-radius-base;
-  margin-top: 8px;
-}
-
 /* 加载点动画 */
 .loading-dots {
   display: flex;
@@ -490,59 +471,106 @@
   }
 }
 
+/* 替换冲突的规划和错误状态容器样式 */
+/* 使用不会与container.less冲突的选择器 */
+.empty-state .tasks-container,
+.planning-stage-container .tasks-container,
+.error-state-container .tasks-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 400px;
+  padding: 0 20px; /* 增加水平内边距，确保内容有足够空间 */
+  box-sizing: border-box;
+}
+
 /* 规划阶段样式优化 */
-.planning-stage {
-  padding: 40px 20px;
-  background-color: #fafafa;
+.task-list-placeholder.planning-stage {
+  padding: 30px 20px;
+  background-color: #ffffff;
   border-radius: 10px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-  border: 1px solid rgba(0, 0, 0, 0.06);
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.03);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  position: relative;
+  box-sizing: border-box; /* 确保边框包含在宽度内 */
 }
 
 .planning-stage-icon {
-  background-color: rgba(24, 144, 255, 0.1);
-  width: 50px;
-  height: 50px;
+  background-color: rgba(24, 144, 255, 0.08);
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 16px;
-}
-
-.planning-stage-title {
-  font-size: 16px;
-  font-weight: 600;
-  color: #1890ff;
   margin-bottom: 12px;
 }
 
+.planning-stage-title {
+  font-size: 15px;
+  font-weight: 500;
+  color: rgba(0, 0, 0, 0.75);
+  margin-bottom: 10px;
+}
+
 .planning-stage-description {
-  background-color: rgba(24, 144, 255, 0.05);
-  padding: 10px 16px;
-  border-radius: 8px;
-  margin: 16px 0;
+  background-color: rgba(24, 144, 255, 0.04);
+  padding: 8px 12px;
+  border-radius: 6px;
+  margin: 12px 0;
   color: rgba(0, 0, 0, 0.65);
-  font-size: 14px;
+  font-size: 13px;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
+  line-height: 1.5;
+}
+
+/* 添加图标垂直对齐修复 */
+.planning-stage-description .icon-wrapper {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  margin-right: 8px;
+  margin-top: 2px;
+  color: rgba(0, 0, 0, 0.45);
+  line-height: 1;
+}
+
+.planning-stage-description .icon-wrapper .anticon {
+  font-size: 14px;
+}
+
+.planning-stage-description .description-content {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.planning-stage-description .description-text {
+  margin-bottom: 4px;
+}
+
+.planning-stage-description .description-text:last-child {
+  margin-bottom: 0;
 }
 
 .task-planning-animation {
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-top: 20px;
+  margin-top: 16px;
+  margin-bottom: 4px;
 }
 
 /* 改进任务规划动画点样式 */
 .task-planning-dot {
   display: inline-block;
-  width: 10px;
-  height: 10px;
-  margin: 0 5px;
+  width: 6px;
+  height: 6px;
+  margin: 0 4px;
   border-radius: 50%;
-  background-color: #1890ff;
+  background-color: #36cfc9;
   animation: task-planning-pulse 1.5s infinite ease-in-out;
 }
 
@@ -571,4 +599,177 @@
     transform: scale(0.8);
     opacity: 0.3;
   }
+}
+
+/* 错误状态样式优化 */
+.task-list-placeholder.error-state {
+  border-color: rgba(255, 77, 79, 0.1);
+  background-color: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.03);
+  position: relative;
+}
+
+.error-icon {
+  background-color: rgba(255, 77, 79, 0.08);
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 16px;
+}
+
+.error-title {
+  font-size: 16px;
+  font-weight: 500;
+  color: rgba(0, 0, 0, 0.85);
+  margin-bottom: 12px;
+  text-align: center;
+}
+
+.error-actions {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px !important;
+}
+
+/* 空状态样式优化 */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  max-width: 400px;
+  width: 90%;
+  margin: auto;
+  padding: 30px 20px;
+  position: relative;
+  top: -5%;
+}
+
+.empty-icon {
+  font-size: 28px;
+  color: rgba(0, 0, 0, 0.15);
+  margin-bottom: 16px;
+}
+
+.empty-text {
+  color: rgba(0, 0, 0, 0.45);
+  font-size: 14px;
+}
+
+/* 添加任务错误样式 */
+.task-error {
+  margin-left: 28px;
+  padding: 8px 12px;
+  border-radius: @border-radius-base;
+  background-color: rgba(249, 72, 62, 0.05);
+  border: 1px solid rgba(249, 72, 62, 0.1);
+  color: @error-color;
+  font-size: 13px;
+  line-height: 1.5;
+  margin-top: 8px;
+  margin-bottom: 8px;
+}
+
+/* 添加错误消息样式 */
+.error-message {
+  color: @error-color;
+  font-size: 13px;
+  background-color: rgba(249, 72, 62, 0.05);
+  padding: 12px 16px;
+  border-radius: 6px;
+  margin: 12px 0;
+  text-align: left;
+  word-break: break-word;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow-wrap: break-word;
+}
+
+/* 任务列表头部操作区 */
+.task-list-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* 任务列表底部 */
+.task-list-footer {
+  display: flex;
+  justify-content: center;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+/* 底部操作按钮容器 */
+.footer-actions-container {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  width: 100%;
+  margin-bottom: 10px;
+  padding-top: 12px;
+  background-color: #fff;
+  z-index: 100;
+  position: fixed;
+  bottom: 60px;
+  left: 0;
+  right: 0;
+  max-width: 340px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.footer-actions-container .action-button {
+  min-width: 100px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  font-size: 13px;
+}
+
+/* 返回主页按钮不变色 */
+.return-button-wrapper .action-button:hover,
+.return-button-wrapper .action-button:focus {
+  background-color: #1890ff;
+  border-color: #1890ff;
+}
+
+.retry-button-wrapper, .return-button-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 任务列表卡片样式 */
+.task-list-card {
+  width: 100%;
+  border-radius: 8px;
+  overflow: visible;
+  margin-top: 5px;
+}
+
+.task-list-card .ant-card-head {
+  padding: 8px 12px;
+  min-height: auto;
+  border-bottom: 1px solid #f0f0f0;
+  background-color: #fafafa;
+}
+
+.task-list-card .ant-card-body {
+  padding: 12px;
+}
+
+.task-header-title {
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
 } 

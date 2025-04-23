@@ -145,6 +145,7 @@
   max-width: 340px;
   margin: 0 auto;
   padding-bottom: 120px; /* 增加底部内边距，确保内容不被底部按钮遮挡 */
+  padding-top: 6px; /* 与components/layout.less保持一致 */
   height: auto; /* 移除固定高度，允许容器跟随内容自适应 */
   max-height: 100%; /* 确保不超过父容器高度 */
   position: relative; /* 添加相对定位 */
@@ -185,7 +186,7 @@
 .footer-input-area {
   width: 100%;
   margin: 0 auto;
-  padding: 8px 0;
+  padding: 20px 0 8px; /* 增加顶部内边距，减少与按钮的重叠 */
   box-sizing: border-box;
   background-color: #ffffff;
   border-top: none;

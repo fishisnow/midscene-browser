@@ -3,8 +3,24 @@
 /* 知识指示器容器 */
 .knowledge-indicator-container {
   width: 100%;
-  padding: 0 15px;
-  margin: 5px 0 10px;
+  padding: 0;
+  margin: 0;
+  background-color: rgba(6, 177, 171, 0.08);
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.selected-knowledge-indicator {
+  display: flex;
+  align-items: center;
+  padding: 8px 15px;
+  font-size: 13px;
+  color: @text-secondary;
+}
+
+.knowledge-icon {
+  margin-right: 8px;
+  color: @primary-color;
+  font-size: 16px;
 }
 
 /* 空状态下的知识卡片容器 */
@@ -80,7 +96,7 @@
   min-height: 300px;
   max-height: none;
   height: auto;
-  padding-top: 10px;
+  padding-top: 0;
   position: relative;
 }
 
@@ -129,6 +145,7 @@
   flex-direction: column;
   overflow-y: auto;
   max-height: 100%;
+  padding-top: 6px;
 }
 
 /* 任务列表占位符 */
@@ -183,11 +200,38 @@
   z-index: 10;
 }
 
-.retry-button-container, 
-.return-button-container {
+.footer-actions-container {
+  margin-bottom: 24px;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  gap: 12px;
+  width: 100%;
+}
+
+.retry-button-wrapper, 
+.return-button-wrapper {
   display: flex;
   justify-content: center;
-  margin-bottom: 10px;
+  margin-bottom: 0;
+}
+
+/* 返回主页按钮样式 */
+.return-button-wrapper .ant-btn-primary,
+.return-button-wrapper .ant-btn-primary.action-button,
+.ant-btn-primary.action-button.ant-btn {
+  background-color: @primary-color !important;
+  border-color: @primary-color !important;
+  transition: all 0.2s ease !important;
+  box-shadow: none !important;
+}
+
+.return-button-wrapper .ant-btn-primary:hover,
+.return-button-wrapper .ant-btn-primary.action-button:hover,
+.ant-btn-primary.action-button.ant-btn:hover {
+  background-color: darken(@primary-color, 10%) !important; /* 加深绿色 */
+  border-color: darken(@primary-color, 10%) !important;
+  box-shadow: @box-shadow-primary !important;
 }
 
 .input-wrapper {

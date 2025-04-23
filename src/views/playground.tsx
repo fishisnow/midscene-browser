@@ -5,7 +5,7 @@ import {
     useEnvConfig,
 } from '@midscene/visualizer';
 import {Form, message, Button, Modal, Input} from 'antd';
-import {SettingOutlined, GithubOutlined, BookOutlined, WarningOutlined, InfoCircleOutlined, ThunderboltOutlined, ArrowLeftOutlined} from '@ant-design/icons';
+import {SettingOutlined, GithubOutlined, BookOutlined, WarningOutlined, InfoCircleOutlined, ThunderboltOutlined, ArrowLeftOutlined, FileTextOutlined} from '@ant-design/icons';
 import {useCallback, useEffect, useRef, useState} from 'react';
 import {CompositeAgent, TaskPlan} from '../agent/composite-agent.ts';
 import {TaskList, TaskWithStatus, TaskStatus} from './task-list.tsx';
@@ -40,6 +40,10 @@ const formatErrorMessage = (e: any): string => {
     if (errorMessage.includes('403 status code') || errorMessage.includes('failed to call AI model service: 403')) {
         return '无法连接到AI服务。请检查您的网络连接和API设置。';
     }
+    // 处理404错误
+    if (errorMessage.includes('404') || errorMessage.includes('failed to call AI model service: 404')) {
+        return 'failed to call AI model service: 404\n404 page not found. Trouble shooting:\nhttps://midscenejs.com/model-provider.html';
+    }
     if (errorMessage.includes('of different extension')) {
         return 'Conflicting extension detected. Please disable the suspicious plugins and refresh the page. Guide: https://midscenejs.com/quick-experience.html#faq';
     }
@@ -72,9 +76,11 @@ const isAPIRelatedError = (errorMessage?: string | null): boolean => {
     return (
         errorMessage.includes('API') || 
         errorMessage.includes('403') || 
+        errorMessage.includes('404') ||
         errorMessage.includes('密钥') || 
         errorMessage.includes('无法连接') ||
-        errorMessage.includes('model service')
+        errorMessage.includes('model service') ||
+        errorMessage.includes('failed to call AI model service')
     );
 };
 
@@ -591,8 +597,8 @@ export function BrowserExtensionPlayground({
                 {tasksWithStatus.length > 0 && selectedKnowledge && (
                     <div className="knowledge-indicator-container">
                         <div className="selected-knowledge-indicator">
-                            <BookOutlined className="knowledge-icon"/>
-                            <span>已选择知识: {selectedKnowledge}</span>
+                            <FileTextOutlined className="knowledge-icon"/>
+                            <span>已选择知识: <strong>{selectedKnowledge}</strong></span>
                         </div>
                     </div>
                 )}
@@ -645,12 +651,15 @@ export function BrowserExtensionPlayground({
                                     >
                                         重试
                                     </Button>
-                                    <Button 
-                                        onClick={resetPlanningState}
-                                        icon={<ArrowLeftOutlined />}
-                                    >
-                                        返回
-                                    </Button>
+                                    {/* 只有当不是API相关错误时才显示返回按钮 */}
+                                    {!isAPIRelatedError(result?.error) && (
+                                        <Button 
+                                            onClick={resetPlanningState}
+                                            icon={<ArrowLeftOutlined />}
+                                        >
+                                            返回
+                                        </Button>
+                                    )}
                                 </div>
                             </div>
                         ) : tasksWithStatus.length === 0 && !loading ? (
@@ -684,7 +693,7 @@ export function BrowserExtensionPlayground({
 
                 <div className="footer-input-area">
                     {showRetryButton && !loading && (
-                        <div className="footer-actions-container">
+                        <div className="footer-actions-container" style={{ marginBottom: '24px' }}>
                             <div className="retry-button-wrapper">
                                 <RetryButton
                                     onClick={handleRerunClick}
@@ -707,7 +716,7 @@ export function BrowserExtensionPlayground({
                     )}
 
                     {!showRetryButton && !loading && (executionPhase === ExecutionPhase.COMPLETED || executionPhase === ExecutionPhase.ERROR) && (
-                        <div className="footer-actions-container">
+                        <div className="footer-actions-container" style={{ marginBottom: '24px' }}>
                             <div className="return-button-wrapper">
                                 <Button 
                                     type="primary" 

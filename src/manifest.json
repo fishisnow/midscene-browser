@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "author": "fishisnow",
   "name": "Midscene Browser",
-  "description": "一个 AI 驱动的 Web 自动化工具",
+  "description": "Open-source extension for automating web pages using natural language through AI.",
   "version": "0.0.1",
   "action": {
     "default_icon": {

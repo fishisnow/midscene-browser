@@ -1,7 +1,8 @@
 import {callToGetJSONObject} from '@midscene/core/ai-model';
-import {systemPrompt, automationUserPrompt} from "./composite-prompts.ts";
+import {getSystemPrompt, automationUserPrompt} from "./composite-prompts.ts";
 import {descriptionOfTree} from '@midscene/shared/extractor';
 import {imageInfoOfBase64} from '@midscene/shared/img';
+import i18n from '../locales/i18n';
 
 export interface ActivityItem {
     activity: 'action' | 'query' | 'assert';
@@ -35,6 +36,11 @@ export class CompositeAgent {
     onActivityFail?: (index: number, error: string) => void;
     onPlanComplete?: (plan: TaskPlan) => void;
 
+    // 获取当前语言
+    getCurrentLanguage(): string {
+        return i18n.language || 'zh';
+    }
+
     /**
      * 执行单个活动
      * @param activity 活动项
@@ -44,8 +50,12 @@ export class CompositeAgent {
     async executeActivity(activity: ActivityItem, activeAgent: any | null): Promise<any> {
         const {activity: activityType, activity_prompt} = activity;
         // 更新进度提示
-        const progressText = `${activityType === 'action' ? '执行操作' :
-            activityType === 'query' ? '查询信息' : '验证断言'}: ${activity_prompt}`;
+        const progressText = this.getCurrentLanguage() === 'en' 
+            ? `${activityType === 'action' ? 'Executing action' : 
+               activityType === 'query' ? 'Querying information' : 'Verifying assertion'}: ${activity_prompt}`
+            : `${activityType === 'action' ? '执行操作' :
+               activityType === 'query' ? '查询信息' : '验证断言'}: ${activity_prompt}`;
+               
         if (this.onProgressUpdate) {
             this.onProgressUpdate(progressText);
         }
@@ -64,7 +74,10 @@ export class CompositeAgent {
                     result = await activeAgent.aiAssert(activity_prompt);
                     break;
                 default:
-                    throw new Error(`未知的活动类型: ${activityType}`);
+                    const errorMsg = this.getCurrentLanguage() === 'en' 
+                        ? `Unknown activity type: ${activityType}`
+                        : `未知的活动类型: ${activityType}`;
+                    throw new Error(errorMsg);
             }
 
             const executionTime = Date.now() - startTime;
@@ -111,8 +124,11 @@ export class CompositeAgent {
      * @returns 任务计划
      */
     async planTask(taskPrompt: string, activeAgent: any, knowledgeBase?: Record<string, string>): Promise<TaskPlan> {
+        const isEnglish = this.getCurrentLanguage() === 'en';
         if (this.onProgressUpdate) {
-            this.onProgressUpdate('正在分析任务并规划执行步骤...');
+            this.onProgressUpdate(isEnglish 
+                ? 'Analyzing task and planning execution steps...' 
+                : '正在分析任务并规划执行步骤...');
         }
 
         try {
@@ -141,7 +157,7 @@ export class CompositeAgent {
             });
 
             const msgs = [
-                {role: 'system', content: systemPrompt},
+                {role: 'system', content: getSystemPrompt(this.getCurrentLanguage())},
                 {
                     role: 'user',
                     content: [
@@ -165,12 +181,16 @@ export class CompositeAgent {
             
             // 检查返回结果是否为字符串，如果是则表示AI无法规划任务
             if (typeof res.content === 'string') {
-                throw new Error(`AI无法规划任务: ${res.content}`);
+                throw new Error(isEnglish 
+                    ? `AI cannot plan task: ${res.content}` 
+                    : `AI无法规划任务: ${res.content}`);
             }
             
             // 检查返回的内容是否符合预期的数组结构
             if (!Array.isArray(res.content) || res.content.length === 0) {
-                throw new Error('AI返回的结果格式不正确，无法解析为活动列表');
+                throw new Error(isEnglish
+                    ? 'The format of the result returned by AI is incorrect and cannot be parsed as an activity list'
+                    : 'AI返回的结果格式不正确，无法解析为活动列表');
             }
             
             try {
@@ -179,7 +199,9 @@ export class CompositeAgent {
                 }>).map(item => {
                     // 检查每个item是否有value属性且为数组
                     if (!item.value || !Array.isArray(item.value)) {
-                        throw new Error('活动项结构不正确');
+                        throw new Error(isEnglish 
+                            ? 'Incorrect activity item structure' 
+                            : '活动项结构不正确');
                     }
                     
                     const activityObj: any = {};
@@ -190,19 +212,25 @@ export class CompositeAgent {
                     
                     // 验证必需的字段是否存在
                     if (!activityObj.activity || !activityObj.activity_prompt) {
-                        throw new Error('活动项缺少必需的字段');
+                        throw new Error(isEnglish 
+                            ? 'Activity item is missing required fields' 
+                            : '活动项缺少必需的字段');
                     }
                     
                     return activityObj as ActivityItem;
                 });
 
                 if (!Array.isArray(activities) || activities.length === 0) {
-                    throw new Error('AI 返回的活动列表无效或为空');
+                    throw new Error(isEnglish 
+                        ? 'The activity list returned by AI is invalid or empty'
+                        : 'AI 返回的活动列表无效或为空');
                 }
 
                 console.log(`规划了 ${activities.length} 个活动`);
                 if (this.onProgressUpdate) {
-                    this.onProgressUpdate(`已规划 ${activities.length} 个执行步骤`);
+                    this.onProgressUpdate(isEnglish
+                        ? `Planned ${activities.length} execution steps`
+                        : `已规划 ${activities.length} 个执行步骤`);
                 }
 
                 const taskPlan = {activities};
@@ -214,15 +242,21 @@ export class CompositeAgent {
 
                 return taskPlan
             } catch (parseError: any) {
-                console.error('解析AI返回的活动列表失败', parseError);
+                console.error(isEnglish 
+                    ? 'Failed to parse the activity list returned by AI' 
+                    : '解析AI返回的活动列表失败', parseError);
                 // 如果是解析错误，提供更详细的错误信息
-                const errorMessage = `无法解析AI返回的任务计划: ${parseError.message}。原始响应: ${JSON.stringify(res.content).substring(0, 200)}...`;
+                const errorMessage = isEnglish
+                    ? `Unable to parse AI task plan: ${parseError.message}. Original response: ${JSON.stringify(res.content).substring(0, 200)}...`
+                    : `无法解析AI返回的任务计划: ${parseError.message}。原始响应: ${JSON.stringify(res.content).substring(0, 200)}...`;
                 throw new Error(errorMessage);
             }
         } catch (error) {
-            console.error('规划任务失败', error);
+            console.error(isEnglish ? 'Task planning failed' : '规划任务失败', error);
             if (this.onProgressUpdate) {
-                this.onProgressUpdate(`规划失败: ${error instanceof Error ? error.message : String(error)}`);
+                this.onProgressUpdate(isEnglish
+                    ? `Planning failed: ${error instanceof Error ? error.message : String(error)}`
+                    : `规划失败: ${error instanceof Error ? error.message : String(error)}`);
             }
             throw error;
         }
@@ -235,10 +269,13 @@ export class CompositeAgent {
      * @returns 执行结果
      */
     async executePlannedActivities(plan: TaskPlan, activeAgent: any): Promise<TaskExecutionResult> {
+        const isEnglish = this.getCurrentLanguage() === 'en';
         try {
             const {activities} = plan;
             if (this.onProgressUpdate) {
-                this.onProgressUpdate(`开始执行 ${activities.length} 个步骤...`);
+                this.onProgressUpdate(isEnglish
+                    ? `Starting execution of ${activities.length} steps...`
+                    : `开始执行 ${activities.length} 个步骤...`);
             }
 
             const results = [];
@@ -246,7 +283,7 @@ export class CompositeAgent {
 
             for (let i = 0; i < activities.length; i++) {
                 const activity = activities[i];
-                console.log(`执行活动 ${i + 1}/${activities.length}: ${activity.activity} - ${activity.activity_prompt}`);
+                console.log(`${isEnglish ? 'Executing activity' : '执行活动'} ${i + 1}/${activities.length}: ${activity.activity} - ${activity.activity_prompt}`);
 
                 if (this.onActivityStart) {
                     this.onActivityStart(i);
@@ -266,13 +303,17 @@ export class CompositeAgent {
                     results.push(result);
                     completedActivities++;
                 } catch (error) {
-                    console.error(`活动执行失败: ${activity.activity_prompt}`, error);
+                    console.error(isEnglish 
+                        ? `Activity execution failed: ${activity.activity_prompt}` 
+                        : `活动执行失败: ${activity.activity_prompt}`, error);
                     // 添加执行时间即使失败
                     const executionTime = Date.now() - startTime;
                     activities[i].executionTime = executionTime;
 
                     const errorMessage = error instanceof Error ? error.message : String(error);
-                    activities[i].activity_prompt = `错误: ${errorMessage}。原任务: ${activity.activity_prompt}`;
+                    activities[i].activity_prompt = isEnglish
+                        ? `Error: ${errorMessage}. Original task: ${activity.activity_prompt}`
+                        : `错误: ${errorMessage}。原任务: ${activity.activity_prompt}`;
 
                     // 调用活动失败回调
                     if (this.onActivityFail) {
@@ -286,7 +327,9 @@ export class CompositeAgent {
             }
 
             if (this.onProgressUpdate) {
-                this.onProgressUpdate('所有步骤执行完成！');
+                this.onProgressUpdate(isEnglish 
+                    ? 'All steps executed!' 
+                    : '所有步骤执行完成！');
             }
 
             return {
@@ -296,9 +339,11 @@ export class CompositeAgent {
                 results: results
             };
         } catch (error) {
-            console.error('执行任务失败', error);
+            console.error(isEnglish ? 'Task execution failed' : '执行任务失败', error);
             if (this.onProgressUpdate) {
-                this.onProgressUpdate(`执行失败: ${error instanceof Error ? error.message : String(error)}`);
+                this.onProgressUpdate(isEnglish
+                    ? `Execution failed: ${error instanceof Error ? error.message : String(error)}`
+                    : `执行失败: ${error instanceof Error ? error.message : String(error)}`);
             }
             return {
                 success: false,

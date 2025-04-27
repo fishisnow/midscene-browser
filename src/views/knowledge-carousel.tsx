@@ -2,6 +2,8 @@ import {useState, useEffect} from 'react';
 import {Button, Typography, Badge, Modal, Form, Input, message} from 'antd';
 import {LeftOutlined, RightOutlined, PlusOutlined, BookOutlined, UserOutlined, EditOutlined, CloseOutlined} from '@ant-design/icons';
 import systemKnowledgeData from '../config/system-knowledge.json';
+// 导入i18n
+import { useTranslation } from 'react-i18next';
 
 const {Paragraph, Text} = Typography;
 
@@ -9,6 +11,7 @@ type KnowledgeItem = {
     name: string;
     content: string;
     isCustom?: boolean;
+    language?: string;
 };
 
 interface KnowledgeCarouselProps {
@@ -33,6 +36,7 @@ export function KnowledgeCarousel({
     onSelected,
     selectedKnowledge: externalSelectedKnowledge
 }: KnowledgeCarouselProps) {
+    const { t } = useTranslation();
     const [currentIndex, setCurrentIndex] = useState(0);
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [customKnowledge, setCustomKnowledge] = useState<KnowledgeItem[]>([]);
@@ -53,7 +57,13 @@ export function KnowledgeCarousel({
     const [deleteModalVisible, setDeleteModalVisible] = useState(false);
 
     // 从配置文件加载系统内置的知识库
-    const systemKnowledge: KnowledgeItem[] = systemKnowledgeData.systemKnowledge || [];
+    const allSystemKnowledge: KnowledgeItem[] = systemKnowledgeData.systemKnowledge || [];
+    const { i18n } = useTranslation();
+
+    // 根据当前语言筛选系统知识库
+    const systemKnowledge = allSystemKnowledge.filter(item => 
+        !item.language || item.language === i18n.language
+    );
 
     // 初始化知识库
     useEffect(() => {
@@ -148,6 +158,9 @@ export function KnowledgeCarousel({
         
         // 切换到自定义知识标签
         setActiveTab(KnowledgeType.CUSTOM);
+        
+        // 使用字符串替换而非对象形式的参数
+        message.success(t('knowledge.addSuccess').replace('{name}', `"${values.name}"`));
     };
 
     // 处理知识选择
@@ -221,7 +234,7 @@ export function KnowledgeCarousel({
                 }}
             >
                 <div className="knowledge-status-dot"></div>
-                <span>查看</span>
+                <span>{t('common.view')}</span>
             </div>
         </div>
     );
@@ -262,7 +275,7 @@ export function KnowledgeCarousel({
             });
         }
         
-        message.success('知识内容已更新');
+        message.success(t('knowledge.updateSuccess'));
     };
     
     // 进入编辑模式
@@ -303,13 +316,43 @@ export function KnowledgeCarousel({
         setDeleteModalVisible(false);
         setContentVisible(false);
         
-        message.success('知识已删除');
+        message.success(t('knowledge.deleteSuccess'));
     };
+
+    // 监听语言变化，更新系统知识库
+    useEffect(() => {
+        // 当语言变化时，重新筛选系统知识库
+        if (selectedKnowledgeLocal) {
+            // 检查选择的知识库在当前语言下是否存在
+            const exists = [...systemKnowledge, ...customKnowledge].some(item => item.name === selectedKnowledgeLocal);
+            if (!exists) {
+                // 如果不存在，清除选择
+                setSelectedKnowledgeLocal('');
+                if (onSelected) {
+                    onSelected('');
+                }
+                // 确保清空内容通知
+                if (onChange) {
+                    onChange({});
+                }
+            } else {
+                // 如果存在，但可能内容变了(语言变化)，需要更新
+                const selectedItem = [...systemKnowledge, ...customKnowledge].find(item => item.name === selectedKnowledgeLocal);
+                if (selectedItem && onChange) {
+                    onChange({
+                        [selectedItem.name]: selectedItem.content
+                    });
+                }
+            }
+        }
+        // 重置当前索引
+        setCurrentIndex(0);
+    }, [i18n.language, systemKnowledge, customKnowledge, selectedKnowledgeLocal, onChange, onSelected]);
 
     return (
         <div className="knowledge-carousel">
             <div className="knowledge-carousel-header">
-                <span className="knowledge-carousel-title">高级知识库</span>
+                <span className="knowledge-carousel-title">{t('knowledge.title')}</span>
                 {selectedKnowledgeLocal && (
                     <Badge
                         count={<Text className="selected-badge">{selectedKnowledgeLocal}</Text>}
@@ -331,19 +374,19 @@ export function KnowledgeCarousel({
                     className={`knowledge-tab ${activeTab === KnowledgeType.ALL ? 'active' : ''}`}
                     onClick={() => handleTabChange(KnowledgeType.ALL)}
                 >
-                    全部
+                    {t('knowledge.all')}
                 </div>
                 <div 
                     className={`knowledge-tab ${activeTab === KnowledgeType.SYSTEM ? 'active' : ''}`}
                     onClick={() => handleTabChange(KnowledgeType.SYSTEM)}
                 >
-                    系统
+                    {t('knowledge.system')}
                 </div>
                 <div 
                     className={`knowledge-tab ${activeTab === KnowledgeType.CUSTOM ? 'active' : ''}`}
                     onClick={() => handleTabChange(KnowledgeType.CUSTOM)}
                 >
-                    自定义
+                    {t('knowledge.custom')}
                 </div>
             </div>
 
@@ -369,7 +412,7 @@ export function KnowledgeCarousel({
                                     </div>
                                 </div>
                             ) : (
-                                <span>没有可用的知识库</span>
+                                <span>{t('knowledge.noKnowledge')}</span>
                             )}
                         </div>
                     )}
@@ -387,7 +430,7 @@ export function KnowledgeCarousel({
 
             {/* 添加知识模态框 */}
             <Modal
-                title="添加自定义知识"
+                title={t('knowledge.addKnowledge')}
                 open={isModalVisible}
                 onCancel={() => setIsModalVisible(false)}
                 onOk={() => form.submit()}
@@ -400,33 +443,38 @@ export function KnowledgeCarousel({
                     onFinish={handleAddCustom}
                 >
                     <Paragraph type="secondary" style={{marginBottom: 12, fontSize: 12}}>
-                        添加自定义知识可帮助AI更好地理解特定网站类型
+                        {t('knowledge.addHelp')}
                     </Paragraph>
 
                     <Form.Item
                         name="name"
-                        label="知识名称"
+                        label={t('knowledge.name')}
                         rules={[
-                            {required: true, message: '请输入知识名称'},
+                            {required: true, message: t('knowledge.name')},
                             {
                                 validator: (_, value) => {
-                                    return allKnowledge.find(item => item.name === value)
-                                        ? Promise.reject(new Error('知识名称已存在'))
+                                    // 检查系统知识和自定义知识中是否有重名
+                                    const existingNames = [
+                                        ...systemKnowledge.map(item => item.name),
+                                        ...customKnowledge.map(item => item.name)
+                                    ];
+                                    return existingNames.includes(value)
+                                        ? Promise.reject(new Error(t('knowledge.nameExists')))
                                         : Promise.resolve();
                                 }
                             }
                         ]}
                     >
-                        <Input placeholder="例如: 电子商务网站"/>
+                        <Input placeholder={t('knowledge.namePlaceholder')}/>
                     </Form.Item>
                     <Form.Item
                         name="content"
-                        label="知识内容"
-                        rules={[{required: true, message: '请输入知识内容'}]}
+                        label={t('knowledge.content')}
+                        rules={[{required: true, message: t('knowledge.contentPlaceholder')}]}
                     >
                         <Input.TextArea
                             rows={3}
-                            placeholder="请输入对该知识的详细描述"
+                            placeholder={t('knowledge.contentPlaceholder')}
                         />
                     </Form.Item>
                 </Form>
@@ -476,12 +524,12 @@ export function KnowledgeCarousel({
                     >
                         <Form.Item
                             name="content"
-                            label="知识内容"
-                            rules={[{required: true, message: '请输入知识内容'}]}
+                            label={t('knowledge.content')}
+                            rules={[{required: true, message: t('knowledge.contentPlaceholder')}]}
                         >
                             <Input.TextArea
                                 rows={5}
-                                placeholder="请输入对该知识的详细描述"
+                                placeholder={t('knowledge.contentPlaceholder')}
                                 autoFocus
                             />
                         </Form.Item>
@@ -489,13 +537,13 @@ export function KnowledgeCarousel({
                             <Button 
                                 onClick={() => setIsEditMode(false)}
                             >
-                                取消
+                                {t('common.cancel')}
                             </Button>
                             <Button 
                                 type="primary" 
                                 htmlType="submit"
                             >
-                                保存
+                                {t('common.save')}
                             </Button>
                         </div>
                     </Form>
@@ -508,19 +556,19 @@ export function KnowledgeCarousel({
 
             {/* 删除确认模态框 */}
             <Modal
-                title="确认删除"
+                title={t('common.confirm')}
                 open={deleteModalVisible}
                 onCancel={() => setDeleteModalVisible(false)}
                 onOk={handleDeleteKnowledge}
-                okText="删除"
-                cancelText="取消"
+                okText={t('common.delete')}
+                cancelText={t('common.cancel')}
                 okButtonProps={{ danger: true }}
                 className="knowledge-delete-modal"
                 centered
                 width={340}
                 closeIcon={<CloseOutlined />}
             >
-                <p>确定要删除知识「{currentContent.name}」吗？此操作不可撤销。</p>
+                <p>{t('knowledge.confirmDelete').replace('{name}', currentContent.name)}</p>
             </Modal>
         </div>
     );

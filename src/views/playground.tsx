@@ -4,7 +4,7 @@ import {
     type PlaygroundResult,
     useEnvConfig,
 } from '@midscene/visualizer';
-import {Form, message, Button, Modal, Input} from 'antd';
+import {Form, message, Button, Modal, Input, Radio, Typography} from 'antd';
 import {SettingOutlined, GithubOutlined, BookOutlined, WarningOutlined, InfoCircleOutlined, ThunderboltOutlined, ArrowLeftOutlined, FileTextOutlined} from '@ant-design/icons';
 import {useCallback, useEffect, useRef, useState} from 'react';
 import {CompositeAgent, TaskPlan} from '../agent/composite-agent.ts';
@@ -12,14 +12,18 @@ import {TaskList, TaskWithStatus, TaskStatus} from './task-list.tsx';
 import {KnowledgeCarousel} from './knowledge-carousel.tsx';
 import {ExecuteButton} from './popup/components/execute-button.tsx';
 import {RetryButton} from './popup/components/retry-button.tsx';
+import { useTranslation } from 'react-i18next';
+import { setLanguage } from '../locales/i18n';
+import i18n from '../locales/i18n';
 
 // Header组件定义
 const Header = ({title, children}: { title: string, children?: React.ReactNode }) => {
+    const { t } = useTranslation();
     return (
         <div className="header-nav">
             <div className="logo-container">
                 <img src="/icons/icon.png" alt="Logo" className="midscene-logo"/>
-                <span className="logo-text">{title}</span>
+                <span className="logo-text">{title || t('header.title')}</span>
             </div>
             {children}
         </div>
@@ -38,19 +42,19 @@ const formatErrorMessage = (e: any): string => {
     const errorMessage = e?.message || '';
     // 处理403错误
     if (errorMessage.includes('403 status code') || errorMessage.includes('failed to call AI model service: 403')) {
-        return '无法连接到AI服务。请检查您的网络连接和API设置。';
+        return i18n.t('errors.apiConnectionError');
     }
     // 处理404错误
     if (errorMessage.includes('404') || errorMessage.includes('failed to call AI model service: 404')) {
-        return 'failed to call AI model service: 404\n404 page not found. Trouble shooting:\nhttps://midscenejs.com/model-provider.html';
+        return i18n.t('errors.notFoundError');
     }
     if (errorMessage.includes('of different extension')) {
-        return 'Conflicting extension detected. Please disable the suspicious plugins and refresh the page. Guide: https://midscenejs.com/quick-experience.html#faq';
+        return i18n.t('errors.conflictExtension');
     }
     if (!errorMessage?.includes(ERROR_CODE_NOT_IMPLEMENTED_AS_DESIGNED)) {
         return errorMessage;
     }
-    return 'Unknown error';
+    return i18n.t('errors.unknownError');
 };
 
 // Blank result template
@@ -115,6 +119,7 @@ export function BrowserExtensionPlayground({
     const [form] = Form.useForm();
     const [knowledgeForm] = Form.useForm();
     const inputRef = useRef<any>(null);
+    const { Paragraph } = Typography;
 
     const {config, configString, loadConfig} = useEnvConfig();
     const [tempConfigString, setTempConfigString] = useState(configString);
@@ -272,21 +277,28 @@ export function BrowserExtensionPlayground({
     };
 
     // 处理添加知识
-    const handleAddKnowledge = (values: { name: string; content: string }) => {
+    const handleAddCustom = (values: { name: string; content: string }) => {
+        // 检查名称是否已存在于系统知识或自定义知识中
+        const isNameExist = Object.keys(advancedKnowledge).includes(values.name);
+        if (isNameExist) {
+            message.error(i18n.t('knowledge.nameExists'));
+            return;
+        }
+
         const newKnowledge = {
             ...advancedKnowledge,
             [values.name]: values.content
         };
         setAdvancedKnowledge(newKnowledge);
         setShowKnowledgeModal(false);
-        message.success(`知识 "${values.name}" 已添加`);
+        message.success(i18n.t('knowledge.addSuccess', { name: values.name }));
     };
 
     // Handle form submission
     const handleRun = useCallback(async () => {
         const value = form.getFieldsValue();
         if (!value.prompt) {
-            message.error('请输入任务描述');
+            message.error(i18n.t('errors.promptRequired'));
             return;
         }
 
@@ -575,6 +587,8 @@ export function BrowserExtensionPlayground({
         }
     }, [tasksWithStatus, completedTasks.length, hasErrors, loading]);
 
+    const { i18n } = useTranslation();
+
     return (
         <div className="playground-container">
             <Header title="Midscene Browser">
@@ -598,7 +612,7 @@ export function BrowserExtensionPlayground({
                     <div className="knowledge-indicator-container">
                         <div className="selected-knowledge-indicator">
                             <FileTextOutlined className="knowledge-icon"/>
-                            <span>已选择知识: <strong>{selectedKnowledge}</strong></span>
+                            <span>{i18n.t('knowledge.selectedKnowledge').replace('{name}', `"${selectedKnowledge}"`)}</span>
                         </div>
                     </div>
                 )}
@@ -610,12 +624,12 @@ export function BrowserExtensionPlayground({
                                 <div className="planning-stage-icon">
                                     <ThunderboltOutlined style={{ fontSize: '20px', color: '#1890ff' }} />
                                 </div>
-                                <div className="planning-stage-title">AI 正在规划具体的执行步骤...</div>
+                                <div className="planning-stage-title">{i18n.t('playground.taskPlanning')}</div>
                                 <div className="planning-stage-description">
                                     <span className="icon-wrapper"><InfoCircleOutlined /></span>
                                     <div className="description-content">
-                                        <div className="description-text">正在分析任务并生成执行计划</div>
-                                        <div className="description-text">请稍候...</div>
+                                        <div className="description-text">{i18n.t('playground.planningAnalysis')}</div>
+                                        <div className="description-text">{i18n.t('playground.pleaseWait')}</div>
                                     </div>
                                 </div>
                                 <div className="task-planning-animation">
@@ -632,8 +646,8 @@ export function BrowserExtensionPlayground({
                                         <WarningOutlined style={{ fontSize: '28px', color: '#ff4d4f' }} />
                                     </span>
                                 </div>
-                                <div className="error-title">任务规划失败</div>
-                                <div className="error-message">{result?.error || '未知错误'}</div>
+                                <div className="error-title">{i18n.t('playground.planningFailed')}</div>
+                                <div className="error-message">{result?.error || i18n.t('errors.unknownError')}</div>
                                 <div className="error-actions">
                                     {isAPIRelatedError(result?.error) && (
                                         <Button 
@@ -642,14 +656,14 @@ export function BrowserExtensionPlayground({
                                             icon={<SettingOutlined />}
                                             style={{ marginRight: '8px' }}
                                         >
-                                            调整API设置
+                                            {i18n.t('playground.apiSettings')}
                                         </Button>
                                     )}
                                     <Button 
                                         onClick={handleRerunClick}
                                         style={{ margin: '0 8px' }}
                                     >
-                                        重试
+                                        {i18n.t('common.retry')}
                                     </Button>
                                     {/* 只有当不是API相关错误时才显示返回按钮 */}
                                     {!isAPIRelatedError(result?.error) && (
@@ -657,7 +671,7 @@ export function BrowserExtensionPlayground({
                                             onClick={resetPlanningState}
                                             icon={<ArrowLeftOutlined />}
                                         >
-                                            返回
+                                            {i18n.t('common.back')}
                                         </Button>
                                     )}
                                 </div>
@@ -676,7 +690,7 @@ export function BrowserExtensionPlayground({
                                 <div className="empty-icon">
                                     <BookOutlined/>
                                 </div>
-                                <div className="empty-text">在下方输入您的问题</div>
+                                <div className="empty-text">{i18n.t('playground.emptyPrompt')}</div>
                             </div>
                         ) : (
                             <TaskList
@@ -697,7 +711,7 @@ export function BrowserExtensionPlayground({
                             <div className="retry-button-wrapper">
                                 <RetryButton
                                     onClick={handleRerunClick}
-                                    text="重新运行"
+                                    text={i18n.t('common.runAgain')}
                                     className="action-button"
                                 />
                             </div>
@@ -709,7 +723,7 @@ export function BrowserExtensionPlayground({
                                     icon={<ArrowLeftOutlined />}
                                     className="action-button"
                                 >
-                                    返回主页
+                                    {i18n.t('common.backToHome')}
                                 </Button>
                             </div>
                         </div>
@@ -724,7 +738,7 @@ export function BrowserExtensionPlayground({
                                     icon={<ArrowLeftOutlined />}
                                     className="action-button"
                                 >
-                                    返回主页
+                                    {i18n.t('common.backToHome')}
                                 </Button>
                             </div>
                         </div>
@@ -748,7 +762,7 @@ export function BrowserExtensionPlayground({
                                                     handleExecuteClick();
                                                 }
                                             }}
-                                            placeholder="输入您的问题..."
+                                            placeholder={i18n.t('playground.inputPlaceholder')}
                                             autoSize={{minRows: 1, maxRows: 4}}
                                             disabled={loading}
                                             style={{width: '100%', boxSizing: 'border-box'}}
@@ -768,15 +782,15 @@ export function BrowserExtensionPlayground({
             </div>
 
             <Modal
-                title="环境配置"
+                title={i18n.t('settings.title')}
                 open={settingsVisible}
                 onCancel={handleCloseSettings}
                 footer={[
                     <Button key="cancel" onClick={handleCloseSettings}>
-                        取消
+                        {i18n.t('common.cancel')}
                     </Button>,
                     <Button key="save" type="primary" onClick={handleSaveSettings} disabled={!editingConfig}>
-                        保存
+                        {i18n.t('common.save')}
                     </Button>
                 ]}
                 destroyOnClose={true}
@@ -796,7 +810,7 @@ export function BrowserExtensionPlayground({
                         />
                         <div style={{ marginTop: '10px', textAlign: 'right' }}>
                             <Button onClick={() => setEditingConfig(false)}>
-                                取消编辑
+                                {i18n.t('settings.cancelEdit')}
                             </Button>
                         </div>
                     </>
@@ -808,9 +822,21 @@ export function BrowserExtensionPlayground({
                                 onClick={() => setEditingConfig(true)}
                                 icon={<SettingOutlined />}
                             >
-                                编辑配置
+                                {i18n.t('settings.editConfig')}
                             </Button>
                         </div>
+                        
+                        <div style={{ marginBottom: '15px' }}>
+                            <div style={{ fontWeight: 'bold', marginBottom: '8px' }}>{i18n.t('settings.language')}</div>
+                            <Radio.Group 
+                                value={i18n.language} 
+                                onChange={(e) => setLanguage(e.target.value)}
+                            >
+                                <Radio.Button value="zh">{i18n.t('settings.langZh')}</Radio.Button>
+                                <Radio.Button value="en">{i18n.t('settings.langEn')}</Radio.Button>
+                            </Radio.Group>
+                        </div>
+                        
                         <div className="masked-config-list" style={{ 
                             border: '1px solid #f0f0f0', 
                             borderRadius: '4px', 
@@ -838,61 +864,65 @@ export function BrowserExtensionPlayground({
                                 border: '1px dashed #d9d9d9',
                                 borderRadius: '4px'
                             }}>
-                                <p>暂无配置，点击"编辑配置"添加</p>
+                                <p>{i18n.t('knowledge.noKnowledge')}</p>
                             </div>
                         )}
                     </div>
                 )}
                 <div className="env-config-description" style={{ marginTop: '15px' }}>
-                    <p>格式为 KEY=VALUE，每行一个配置项。</p>
-                    <p>这些数据将<strong>仅保存在您的浏览器本地</strong>。</p>
-                    <p>常用配置：</p>
+                    <p>{i18n.t('settings.format')}</p>
+                    <p>{i18n.t('settings.localStorageNotice')}</p>
+                    <p>{i18n.t('settings.commonConfigs')}</p>
                     <ul>
-                        <li>OPENAI_API_KEY - OpenAI API 密钥</li>
-                        <li>OPENAI_BASE_URL - OpenAI URL 地址</li>
-                        <li>MIDSCENE_MODEL_NAME - 模型名称</li>
+                        <li>{i18n.t('settings.apiKey')}</li>
+                        <li>{i18n.t('settings.baseUrl')}</li>
+                        <li>{i18n.t('settings.modelName')}</li>
                     </ul>
                 </div>
             </Modal>
 
             <Modal
-                title="添加知识"
+                title={i18n.t('knowledge.addKnowledge')}
                 open={showKnowledgeModal}
                 onCancel={() => setShowKnowledgeModal(false)}
                 onOk={handleAddKnowledgeSubmit}
-                okText="添加"
-                cancelText="取消"
+                okText={i18n.t('common.add')}
+                cancelText={i18n.t('common.cancel')}
             >
                 <Form
                     form={knowledgeForm}
                     layout="vertical"
-                    onFinish={handleAddKnowledge}
+                    onFinish={handleAddCustom}
                 >
+                    <Paragraph type="secondary" style={{marginBottom: 12, fontSize: 12}}>
+                        {i18n.t('knowledge.addHelp')}
+                    </Paragraph>
+
                     <Form.Item
                         name="name"
-                        label="知识名称"
+                        label={i18n.t('knowledge.name')}
                         rules={[
-                            {required: true, message: '请输入知识名称'},
+                            {required: true, message: i18n.t('knowledge.name')},
                             {
                                 validator: (_, value) => {
-                                    if (value && Object.keys(advancedKnowledge).includes(value)) {
-                                        return Promise.reject('该知识名称已存在');
-                                    }
-                                    return Promise.resolve();
+                                    const isNameExist = Object.keys(advancedKnowledge).includes(value);
+                                    return isNameExist
+                                        ? Promise.reject(new Error(i18n.t('knowledge.nameExists')))
+                                        : Promise.resolve();
                                 }
                             }
                         ]}
                     >
-                        <Input placeholder="请输入知识名称"/>
+                        <Input placeholder={i18n.t('knowledge.namePlaceholder')}/>
                     </Form.Item>
                     <Form.Item
                         name="content"
-                        label="知识内容"
-                        rules={[{required: true, message: '请输入知识内容'}]}
+                        label={i18n.t('knowledge.content')}
+                        rules={[{required: true, message: i18n.t('knowledge.contentPlaceholder')}]}
                     >
                         <Input.TextArea
-                            rows={4}
-                            placeholder="请输入知识内容"
+                            rows={3}
+                            placeholder={i18n.t('knowledge.contentPlaceholder')}
                         />
                     </Form.Item>
                 </Form>

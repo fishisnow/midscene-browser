@@ -1,0 +1,84 @@
+{
+  "common": {
+    "settings": "Settings",
+    "save": "Save",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "delete": "Delete",
+    "edit": "Edit",
+    "add": "Add",
+    "ok": "OK",
+    "back": "Back",
+    "retry": "Retry",
+    "runAgain": "Run Again",
+    "backToHome": "Back to Home",
+    "view": "View",
+    "unknown": "Unknown"
+  },
+  "header": {
+    "title": "Midscene Browser"
+  },
+  "settings": {
+    "title": "Environment Configuration",
+    "editConfig": "Edit Configuration",
+    "cancelEdit": "Cancel Edit",
+    "format": "Format is KEY=VALUE, one config per line.",
+    "localStorageNotice": "This data will be saved only in your local browser.",
+    "commonConfigs": "Common configurations:",
+    "apiKey": "OPENAI_API_KEY - OpenAI API Key",
+    "baseUrl": "OPENAI_BASE_URL - OpenAI URL Address",
+    "modelName": "MIDSCENE_MODEL_NAME - Model Name",
+    "language": "Language",
+    "langZh": "中文",
+    "langEn": "English"
+  },
+  "playground": {
+    "inputPlaceholder": "Enter your question...",
+    "emptyPrompt": "Enter your question below",
+    "taskPlanning": "AI is planning execution steps...",
+    "planningAnalysis": "Analyzing task and generating execution plan",
+    "pleaseWait": "Please wait...",
+    "planningFailed": "Task planning failed",
+    "apiSettings": "Adjust API Settings"
+  },
+  "tasks": {
+    "taskList": "Task List",
+    "pending": "Pending",
+    "running": "Running",
+    "failed": "Failed",
+    "completed": "Completed",
+    "executionError": "Execution Error",
+    "allTasksCompleted": "All tasks completed",
+    "noTasks": "No tasks",
+    "processing": "Processing...",
+    "task": "Task",
+    "executionResult": "Execution Result:"
+  },
+  "errors": {
+    "apiConnectionError": "Cannot connect to AI service. Please check your network connection and API settings.",
+    "notFoundError": "failed to call AI model service: 404\n404 page not found. Trouble shooting:\nhttps://midscenejs.com/model-provider.html",
+    "conflictExtension": "Conflicting extension detected. Please disable the suspicious plugins and refresh the page. Guide: https://midscenejs.com/quick-experience.html#faq",
+    "unknownError": "Unknown error",
+    "executionError": "An error occurred during execution. Please retry or modify your instructions.",
+    "promptRequired": "Please enter task description"
+  },
+  "knowledge": {
+    "title": "Advanced Knowledge Base",
+    "addKnowledge": "Add Custom Knowledge",
+    "addHelp": "Adding custom knowledge helps AI better understand specific website types",
+    "name": "Knowledge Name",
+    "content": "Knowledge Content",
+    "nameExists": "Knowledge name already exists",
+    "namePlaceholder": "e.g., E-commerce website",
+    "contentPlaceholder": "Please enter a detailed description of this knowledge",
+    "addSuccess": "Knowledge {name} has been added",
+    "updateSuccess": "Knowledge content updated",
+    "deleteSuccess": "Knowledge deleted",
+    "confirmDelete": "Are you sure you want to delete knowledge {name}? This action cannot be undone.",
+    "selectedKnowledge": "Selected knowledge: {name}",
+    "all": "All",
+    "system": "System",
+    "custom": "Custom",
+    "noKnowledge": "No knowledge available"
+  }
+} 

@@ -1,0 +1,84 @@
+{
+  "common": {
+    "settings": "设置",
+    "save": "保存",
+    "cancel": "取消",
+    "confirm": "确认",
+    "delete": "删除",
+    "edit": "编辑",
+    "add": "添加",
+    "ok": "确定",
+    "back": "返回",
+    "retry": "重试",
+    "runAgain": "重新运行",
+    "backToHome": "返回主页",
+    "view": "查看",
+    "unknown": "未知"
+  },
+  "header": {
+    "title": "Midscene Browser"
+  },
+  "settings": {
+    "title": "环境配置",
+    "editConfig": "编辑配置",
+    "cancelEdit": "取消编辑",
+    "format": "格式为 KEY=VALUE，每行一个配置项。",
+    "localStorageNotice": "这些数据将仅保存在您的浏览器本地。",
+    "commonConfigs": "常用配置：",
+    "apiKey": "OPENAI_API_KEY - OpenAI API 密钥",
+    "baseUrl": "OPENAI_BASE_URL - OpenAI URL 地址",
+    "modelName": "MIDSCENE_MODEL_NAME - 模型名称",
+    "language": "语言",
+    "langZh": "中文",
+    "langEn": "English"
+  },
+  "playground": {
+    "inputPlaceholder": "输入您的问题...",
+    "emptyPrompt": "在下方输入您的问题",
+    "taskPlanning": "AI 正在规划具体的执行步骤...",
+    "planningAnalysis": "正在分析任务并生成执行计划",
+    "pleaseWait": "请稍候...",
+    "planningFailed": "任务规划失败",
+    "apiSettings": "调整API设置"
+  },
+  "tasks": {
+    "taskList": "任务列表",
+    "pending": "待执行",
+    "running": "执行中",
+    "failed": "失败",
+    "completed": "已完成",
+    "executionError": "执行错误",
+    "allTasksCompleted": "所有任务已完成",
+    "noTasks": "暂无任务",
+    "processing": "处理中...",
+    "task": "任务",
+    "executionResult": "执行结果:"
+  },
+  "errors": {
+    "apiConnectionError": "无法连接到AI服务。请检查您的网络连接和API设置。",
+    "notFoundError": "failed to call AI model service: 404\n404 page not found. Trouble shooting:\nhttps://midscenejs.com/model-provider.html",
+    "conflictExtension": "Conflicting extension detected. Please disable the suspicious plugins and refresh the page. Guide: https://midscenejs.com/quick-experience.html#faq",
+    "unknownError": "Unknown error",
+    "executionError": "执行过程中出现了错误，请重试或修改您的指令。",
+    "promptRequired": "请输入任务描述"
+  },
+  "knowledge": {
+    "title": "高级知识库",
+    "addKnowledge": "添加自定义知识",
+    "addHelp": "添加自定义知识可帮助AI更好地理解特定网站类型",
+    "name": "知识名称",
+    "content": "知识内容",
+    "nameExists": "知识名称已存在",
+    "namePlaceholder": "例如: 电子商务网站",
+    "contentPlaceholder": "请输入对该知识的详细描述",
+    "addSuccess": "知识 {name} 已添加",
+    "updateSuccess": "知识内容已更新",
+    "deleteSuccess": "知识已删除",
+    "confirmDelete": "确定要删除知识{name}吗？此操作不可撤销。",
+    "selectedKnowledge": "已选择知识: {name}",
+    "all": "全部",
+    "system": "系统",
+    "custom": "自定义",
+    "noKnowledge": "没有可用的知识库"
+  }
+} 

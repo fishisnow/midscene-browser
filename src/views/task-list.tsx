@@ -8,6 +8,8 @@ import {
 } from '@ant-design/icons';
 import {ActivityItem} from '../agent/composite-agent.ts';
 import {RetryButton} from './popup/components/retry-button.tsx';
+// 导入i18n
+import { useTranslation } from 'react-i18next';
 
 // 添加任务状态枚举
 export enum TaskStatus {
@@ -44,6 +46,7 @@ export const TaskList: React.FC<TaskListProps> = ({
                                                       currentTaskIndex,
                                                       showTaskStatus = false
                                                   }) => {
+    const { t } = useTranslation();
     const completedTasks = tasks.filter(t => t.isCompleted || t.status === TaskStatus.COMPLETED);
     const currentTask = tasks[currentTaskIndex] || tasks.find(t => t.status === TaskStatus.RUNNING);
     const pendingTasks = tasks.filter(t => !t.isCompleted && t.status === TaskStatus.PENDING);
@@ -58,39 +61,39 @@ export const TaskList: React.FC<TaskListProps> = ({
                     <div className="task-header-title">
                         {loading && tasks.length === 0 ? (
                             <>
-                                <ThunderboltOutlined/> 规划执行步骤
+                                <ThunderboltOutlined/> {t('playground.taskPlanning')}
                             </>
                         ) : (
                             <>
-                                任务列表
+                                {t('tasks.taskList')}
                                 <span className="task-count">{completedTasks.length}/{tasks.length}</span>
                                 {showTaskStatus && tasks.length > 0 && (
                                     <span className="task-status-indicators">
                     {pendingTasks.length > 0 && (
-                        <span className="status-badge pending">待执行: {pendingTasks.length}</span>
+                        <span className="status-badge pending">{t('tasks.pending')}: {pendingTasks.length}</span>
                     )}
                                         {currentTask && currentTask.status === TaskStatus.RUNNING && (
-                                            <span className="status-badge running">执行中: 1</span>
+                                            <span className="status-badge running">{t('tasks.running')}: 1</span>
                                         )}
                                         {failedTasks.length > 0 && (
-                                            <span className="status-badge failed">失败: {failedTasks.length}</span>
+                                            <span className="status-badge failed">{t('tasks.failed')}: {failedTasks.length}</span>
                                         )}
                   </span>
                                 )}
                             </>
                         )}
                     </div>
-                    {error && <Button size="small" onClick={onRetry}>重试</Button>}
+                    {error && <Button size="small" onClick={onRetry}>{t('common.retry')}</Button>}
                 </div>
             }
         >
             {error && (
                 <Alert
                     type="error"
-                    message="执行错误"
+                    message={t('tasks.executionError')}
                     description={
                         <div className="error-description">
-                            {error.message || '执行过程中出现了错误，请重试或修改您的指令。'}
+                            {error.message || t('errors.executionError')}
                         </div>
                     }
                     showIcon
@@ -108,12 +111,12 @@ export const TaskList: React.FC<TaskListProps> = ({
                         style={{marginBottom: 16}}
                     />
 
-                    <Tooltip title={loading ? '正在执行任务中...' : (hasError ? '执行出错' : '所有任务已完成')}>
+                    <Tooltip title={loading ? t('tasks.processing') : (hasError ? t('tasks.executionError') : t('tasks.allTasksCompleted'))}>
                         <div className="task-status">
                             {loading ? (
                                 <div>
                                     <LoadingOutlined style={{marginRight: 8}}/>
-                                    {currentTask ? `正在执行: ${currentTask.activity_prompt}` : '处理中...'}
+                                    {currentTask ? `${t('tasks.running')}: ${currentTask.activity_prompt}` : t('tasks.processing')}
                                 </div>
                             ) : (
                                 <div>
@@ -122,7 +125,7 @@ export const TaskList: React.FC<TaskListProps> = ({
                                     ) : (
                                         <CheckCircleOutlined style={{color: '#52c41a', marginRight: 8}}/>
                                     )}
-                                    {hasError ? '执行出错' : (tasks.length > 0 ? '所有任务已完成' : '暂无任务')}
+                                    {hasError ? t('tasks.executionError') : (tasks.length > 0 ? t('tasks.allTasksCompleted') : t('tasks.noTasks'))}
                                 </div>
                             )}
                         </div>
@@ -157,13 +160,13 @@ export const TaskList: React.FC<TaskListProps> = ({
                                             {!isCurrentTask && !isCompleted && !isFailed && <ClockCircleOutlined/>}
                                         </div>
                                         <div className="task-name">
-                                            任务 {index + 1}
+                                            {t('tasks.task')} {index + 1}
                                         </div>
                                         <div className={`task-status-label ${statusClass}`}>
-                                            {isFailed && '失败'}
-                                            {isCompleted && '已完成'}
-                                            {isCurrentTask && !isCompleted && !isFailed && '执行中'}
-                                            {!isCurrentTask && !isCompleted && !isFailed && '待执行'}
+                                            {isFailed && t('tasks.failed')}
+                                            {isCompleted && t('tasks.completed')}
+                                            {isCurrentTask && !isCompleted && !isFailed && t('tasks.running')}
+                                            {!isCurrentTask && !isCompleted && !isFailed && t('tasks.pending')}
                                         </div>
                                     </div>
                                     {task.activity_prompt && (
@@ -173,7 +176,7 @@ export const TaskList: React.FC<TaskListProps> = ({
                                     )}
                                     {isCompleted && task.result !== undefined && (
                                         <div className="task-result">
-                                            <div className="result-header">执行结果:</div>
+                                            <div className="result-header">{t('tasks.executionResult')}</div>
                                             <div className="result-content">
                                                 {typeof task.result === 'object'
                                                     ? JSON.stringify(task.result, null, 2)

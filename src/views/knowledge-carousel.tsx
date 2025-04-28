@@ -564,9 +564,11 @@ export function KnowledgeCarousel({
                 cancelText={t('common.cancel')}
                 okButtonProps={{ danger: true }}
                 className="knowledge-delete-modal"
-                centered
-                width={340}
+                width={380}
+                destroyOnClose={true}
                 closeIcon={<CloseOutlined />}
+                wrapClassName="knowledge-delete-modal-wrap"
+                getContainer={document.body}
             >
                 <p>{t('knowledge.confirmDelete').replace('{name}', currentContent.name)}</p>
             </Modal>

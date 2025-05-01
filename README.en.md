@@ -18,10 +18,11 @@ English | [简体中文](./README.md)
 
 |    Website    |                    Instruction                     | Video |
 |:--------:|:-----------------------------------------:| :---: |
-| deepseek | Ask deepseek for the latest international news, extract content related to China, and identify if it is related to tariffs |    <video src="https://github.com/user-attachments/assets/bb3d695a-fbff-4af1-b6cc-5e967c07ccee" height="300" />    |
-|  Taobao      | I want to buy a noise-cancelling headphone for around 300 yuan | <video src="https://github.com/user-attachments/assets/75474138-f51f-4c54-b3cf-46d61d059999" height="300" />        |
+| deepseek | Ask deepseek for the latest international news, extract content related to China, and identify if it is related to tariffs |    <video src="https://github.com/user-attachments/assets/fc79deb7-1563-4645-8d1e-ab1c1165b60a" height="300" />    |
+|  Taobao      | Buy a Bluetooth noise-cancelling headset for less than 300 yuan | <video src="https://github.com/user-attachments/assets/d2834d8a-6639-4465-ac0e-8520242fc45f" height="300" />        |
 
-
+## Extension Link
+[Chrome Web Store](https://chrome.google.com/webstore/detail/midscene-browser/nfpeeekdhenglhecglicddgmjiepbcph)
 
 ## Features
 
